@@ -1,7 +1,12 @@
 package com.sharkaboi.appupdatechecker.extensions
 
 import com.sharkaboi.appupdatechecker.models.AppUpdateCheckerSource
+import okhttp3.HttpUrl
 
 internal fun AppUpdateCheckerSource.GithubSource.isValid(): Boolean {
-    return ownerUsername.isNotBlank() and repoName.isNotBlank()
+    return ownerUsername.isNotBlank() && repoName.isNotBlank()
+}
+
+internal fun AppUpdateCheckerSource.JsonSource.isValid(): Boolean {
+    return HttpUrl.parse(jsonEndpoint) != null && jsonEndpoint.isNotBlank()
 }

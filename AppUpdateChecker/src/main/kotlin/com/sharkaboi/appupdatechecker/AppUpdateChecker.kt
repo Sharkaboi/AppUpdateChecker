@@ -1,11 +1,9 @@
 package com.sharkaboi.appupdatechecker
 
 import android.content.Context
-import com.sharkaboi.appupdatechecker.extensions.installedVersionTag
-import com.sharkaboi.appupdatechecker.extensions.isAfterVersion
-import com.sharkaboi.appupdatechecker.extensions.isInternetConnected
-import com.sharkaboi.appupdatechecker.extensions.isValid
+import com.sharkaboi.appupdatechecker.extensions.*
 import com.sharkaboi.appupdatechecker.interfaces.IAppUpdateChecker
+import com.sharkaboi.appupdatechecker.mappers.toUpdateAvailableState
 import com.sharkaboi.appupdatechecker.models.AppUpdateCheckerSource
 import com.sharkaboi.appupdatechecker.models.UpdateState
 import com.sharkaboi.appupdatechecker.provider.AppUpdateServices
@@ -29,6 +27,7 @@ class AppUpdateChecker(
                 if (!context.isInternetConnected) {
                     return@async UpdateState.NoNetworkFound
                 }
+                require(currentVersionTag.matches(versionRegex)) { "Invalid current version tag" }
                 return@async when (source) {
                     AppUpdateCheckerSource.AmazonSource -> handleAmazonCheck()
                     AppUpdateCheckerSource.FDroidSource -> handleFDroidCheck()
@@ -40,7 +39,7 @@ class AppUpdateChecker(
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                return@async UpdateState.GenericUpdateState(e)
+                return@async UpdateState.GenericError(e)
             }
         }
     }
@@ -62,12 +61,7 @@ class AppUpdateChecker(
                     repo = source.repoName
                 ).await()
                 if (release.tagName.isAfterVersion(currentVersionTag)) {
-                    UpdateState.UpdateAvailable(
-                        latestVersion = release.tagName,
-                        latestVersionUrl = release.htmlUrl,
-                        releaseNotes = release.body,
-                        source = source
-                    )
+                    release.toUpdateAvailableState(source)
                 } else {
                     UpdateState.LatestVersionInstalled
                 }
@@ -89,7 +83,24 @@ class AppUpdateChecker(
     }
 
     private suspend fun handleJsonCheck(): UpdateState {
-        TODO("Not yet implemented")
+        require(source is AppUpdateCheckerSource.JsonSource) { "Invalid source" }
+        if (source.isValid()) {
+            return try {
+                val release = AppUpdateServices.jsonService.getJsonReleaseMetaDataAsync(
+                    url = source.jsonEndpoint
+                ).await()
+                if (release.latestVersion.isAfterVersion(currentVersionTag)) {
+                    release.toUpdateAvailableState(source)
+                } else {
+                    UpdateState.LatestVersionInstalled
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                UpdateState.JSONInvalid
+            }
+        } else {
+            return UpdateState.JSONMalformed
+        }
     }
 
     private suspend fun handleXmlCheck(): UpdateState {

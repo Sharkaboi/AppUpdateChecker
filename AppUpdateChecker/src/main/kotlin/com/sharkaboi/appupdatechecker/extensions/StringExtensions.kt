@@ -1,12 +1,12 @@
 package com.sharkaboi.appupdatechecker.extensions
 
 internal fun String.isAfterVersion(other: String): Boolean {
-    //Starts with v or V and followed by matched numbers and dots.
-    val versionRegex = Regex("[v|V]\\d+(.\\d+)*")
-    require(this.matches(versionRegex)) { "Current version tag is invalid" }
-    require(other.matches(versionRegex)) { "Incoming version tag is invalid" }
-    val thisVersion = this.trim().removePrefix("v").removePrefix("V")
-    val otherVersion = other.trim().removePrefix("v").removePrefix("V")
+    val thisVersionTrimmed = this.trim()
+    val otherVersionTrimmed = other.trim()
+    require(thisVersionTrimmed.matches(versionRegex)) { "Current version tag is invalid" }
+    require(otherVersionTrimmed.matches(versionRegex)) { "Incoming version tag is invalid" }
+    val thisVersion = thisVersionTrimmed.removePrefix("v").removePrefix("V")
+    val otherVersion = otherVersionTrimmed.removePrefix("v").removePrefix("V")
     if (thisVersion == otherVersion) {
         return false
     }
@@ -22,3 +22,6 @@ internal fun String.isAfterVersion(other: String): Boolean {
     }
     return false
 }
+
+//Starts with v or V and followed by matched numbers and dots.
+internal val versionRegex = Regex("[v|V]?\\d+(.\\d+)*")

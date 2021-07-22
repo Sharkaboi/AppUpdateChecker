@@ -11,7 +11,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
 
-class GithubTest {
+class JsonTest {
     private lateinit var context: Context
 
     @Before
@@ -25,9 +25,8 @@ class GithubTest {
     fun `Checker on older installed version returns new version`() = runBlocking {
         val testChecker = AppUpdateChecker(
             context,
-            source = AppUpdateCheckerSource.GithubSource(
-                ownerUsername = "Sharkaboi",
-                repoName = "MediaHub"
+            source = AppUpdateCheckerSource.JsonSource(
+                jsonEndpoint = "https://gist.githubusercontent.com/Sharkaboi/66b45a22afde23a9b2781eeec6f10c56/raw/e0efd6ebdaf88615945fc8c7727a7fc620ad61bf/test.json"
             ),
             currentVersionTag = "v0.0.0"
         )
@@ -40,9 +39,8 @@ class GithubTest {
     fun `Checker on newer installed version returns no update`() = runBlocking {
         val testChecker = AppUpdateChecker(
             context,
-            source = AppUpdateCheckerSource.GithubSource(
-                ownerUsername = "Sharkaboi",
-                repoName = "MediaHub"
+            source = AppUpdateCheckerSource.JsonSource(
+                jsonEndpoint = "https://gist.githubusercontent.com/Sharkaboi/66b45a22afde23a9b2781eeec6f10c56/raw/e0efd6ebdaf88615945fc8c7727a7fc620ad61bf/test.json"
             ),
             currentVersionTag = "v${Int.MAX_VALUE}.0.0"
         )
@@ -52,77 +50,58 @@ class GithubTest {
     }
 
     @Test
-    fun `Checker on invalid github repo returns invalid error`() = runBlocking {
+    fun `Checker on invalid json repo returns invalid error`() = runBlocking {
         val testChecker = AppUpdateChecker(
             context,
-            source = AppUpdateCheckerSource.GithubSource(
-                ownerUsername = "Sharkaboi",
-                repoName = "adadadadadadadadaadada"
+            source = AppUpdateCheckerSource.JsonSource(
+                jsonEndpoint = "https://google.com"
             ),
             currentVersionTag = "v0.0.0"
         )
         val result = testChecker.checkUpdate()
         println(result)
-        assert(result is UpdateState.GithubInvalid)
+        assert(result is UpdateState.JSONInvalid)
     }
 
     @Test
-    fun `Checker on invalid github user returns invalid error`() = runBlocking {
+    fun `Checker on invalid json schema returns invalid error`() = runBlocking {
         val testChecker = AppUpdateChecker(
             context,
-            source = AppUpdateCheckerSource.GithubSource(
-                ownerUsername = "adadadadadadadadaadada",
-                repoName = "MediaHub"
+            source = AppUpdateCheckerSource.JsonSource(
+                jsonEndpoint = "https://gist.githubusercontent.com/Sharkaboi/66b45a22afde23a9b2781eeec6f10c56/raw/a3998cc1728cd42ba02b5b9789f505de42090c84/invalid.json"
             ),
             currentVersionTag = "v0.0.0"
         )
         val result = testChecker.checkUpdate()
         println(result)
-        assert(result is UpdateState.GithubInvalid)
+        assert(result is UpdateState.JSONInvalid)
     }
 
     @Test
-    fun `Checker on github with no release returns invalid error`() = runBlocking {
+    fun `Checker on invalid url returns malformed error`() = runBlocking {
         val testChecker = AppUpdateChecker(
             context,
-            source = AppUpdateCheckerSource.GithubSource(
-                ownerUsername = "Sharkaboi",
-                repoName = "sharkaboi.github.io"
+            source = AppUpdateCheckerSource.JsonSource(
+                jsonEndpoint = "invalid url"
             ),
             currentVersionTag = "v0.0.0"
         )
         val result = testChecker.checkUpdate()
         println(result)
-        assert(result is UpdateState.GithubInvalid)
+        assert(result is UpdateState.JSONMalformed)
     }
 
     @Test
-    fun `Checker on blank username returns malformed error`() = runBlocking {
+    fun `Checker on blank endpoint returns malformed error`() = runBlocking {
         val testChecker = AppUpdateChecker(
             context,
-            source = AppUpdateCheckerSource.GithubSource(
-                ownerUsername = "   ",
-                repoName = "sharkaboi.github.io"
+            source = AppUpdateCheckerSource.JsonSource(
+                jsonEndpoint = "   "
             ),
             currentVersionTag = "v0.0.0"
         )
         val result = testChecker.checkUpdate()
         println(result)
-        assert(result is UpdateState.GithubMalformed)
-    }
-
-    @Test
-    fun `Checker on empty repo name returns malformed error`() = runBlocking {
-        val testChecker = AppUpdateChecker(
-            context,
-            source = AppUpdateCheckerSource.GithubSource(
-                ownerUsername = "Sharkaboi",
-                repoName = ""
-            ),
-            currentVersionTag = "v0.0.0"
-        )
-        val result = testChecker.checkUpdate()
-        println(result)
-        assert(result is UpdateState.GithubMalformed)
+        assert(result is UpdateState.JSONMalformed)
     }
 }

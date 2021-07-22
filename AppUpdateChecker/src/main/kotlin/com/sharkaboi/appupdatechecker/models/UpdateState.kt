@@ -37,7 +37,7 @@ sealed class UpdateState {
     object JSONInvalid : UpdateState()
 
     // Generic UpdateState type to handle other UpdateStates
-    data class GenericUpdateState(
+    data class GenericError(
         val exception: Exception
     ) : UpdateState()
 
