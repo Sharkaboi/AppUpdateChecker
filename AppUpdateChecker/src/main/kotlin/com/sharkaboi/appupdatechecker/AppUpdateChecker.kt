@@ -5,13 +5,15 @@ import com.sharkaboi.appupdatechecker.extensions.*
 import com.sharkaboi.appupdatechecker.interfaces.IAppUpdateChecker
 import com.sharkaboi.appupdatechecker.mappers.toUpdateAvailableState
 import com.sharkaboi.appupdatechecker.models.AppUpdateCheckerSource
+import com.sharkaboi.appupdatechecker.models.IAppUpdateCheckerSource
 import com.sharkaboi.appupdatechecker.models.UpdateState
 import com.sharkaboi.appupdatechecker.provider.AppUpdateServices
+import com.sharkaboi.appupdatechecker.sources.fdroid.isAfterVersion
 import kotlinx.coroutines.*
 
 class AppUpdateChecker(
     private val context: Context,
-    private val source: AppUpdateCheckerSource,
+    private val source: IAppUpdateCheckerSource,
     private val currentVersionTag: String = context.installedVersionTag
 ) : IAppUpdateChecker {
 
@@ -30,7 +32,7 @@ class AppUpdateChecker(
                 require(currentVersionTag.matches(versionRegex)) { "Invalid current version tag" }
                 return@async when (source) {
                     AppUpdateCheckerSource.AmazonSource -> handleAmazonCheck()
-                    AppUpdateCheckerSource.FDroidSource -> handleFDroidCheck()
+                    is AppUpdateCheckerSource.FDroidSource -> handleFDroidCheck()
                     is AppUpdateCheckerSource.GithubSource -> handleGithubCheck()
                     is AppUpdateCheckerSource.GitlabSource -> handleGitlabCheck()
                     AppUpdateCheckerSource.GooglePlaySource -> handleGooglePlayCheck()
@@ -49,7 +51,28 @@ class AppUpdateChecker(
     }
 
     private suspend fun handleFDroidCheck(): UpdateState {
-        TODO("Not yet implemented")
+        require(source is AppUpdateCheckerSource.FDroidSource) { "Invalid source" }
+        val packageName = source.packageName ?: context.packageName
+        val modifiedSource = source.copy(
+            packageName = packageName
+        )
+        if (modifiedSource.isValid()) {
+            return try {
+                val release = AppUpdateServices.fDroidService.getReleasesAsync(
+                    packageName = packageName
+                ).await()
+                if (release.isAfterVersion(currentVersionTag)) {
+                    release.toUpdateAvailableState(modifiedSource)
+                } else {
+                    UpdateState.LatestVersionInstalled
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                UpdateState.FDroidInvalid
+            }
+        } else {
+            return UpdateState.FDroidMalformed
+        }
     }
 
     private suspend fun handleGithubCheck(): UpdateState {

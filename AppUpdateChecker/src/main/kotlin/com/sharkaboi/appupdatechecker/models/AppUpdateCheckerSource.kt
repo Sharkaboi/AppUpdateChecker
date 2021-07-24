@@ -1,6 +1,7 @@
 package com.sharkaboi.appupdatechecker.models
 
-sealed class AppUpdateCheckerSource {
+sealed interface IAppUpdateCheckerSource
+sealed class AppUpdateCheckerSource : IAppUpdateCheckerSource {
 
     data class GithubSource(
         val ownerUsername: String,
@@ -15,7 +16,9 @@ sealed class AppUpdateCheckerSource {
 
     object AmazonSource : AppUpdateCheckerSource()
 
-    object FDroidSource : AppUpdateCheckerSource()
+    data class FDroidSource(
+        val packageName: String? = null
+    ) : AppUpdateCheckerSource()
 
     object GooglePlaySource : AppUpdateCheckerSource()
 

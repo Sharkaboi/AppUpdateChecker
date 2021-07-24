@@ -1,6 +1,8 @@
 package com.sharkaboi.appupdatechecker.provider
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import com.sharkaboi.appupdatechecker.sources.fdroid.FdroidConstants
+import com.sharkaboi.appupdatechecker.sources.fdroid.FdroidService
 import com.sharkaboi.appupdatechecker.sources.github.GithubConstants
 import com.sharkaboi.appupdatechecker.sources.github.GithubService
 import com.sharkaboi.appupdatechecker.sources.json.JsonConstants
@@ -9,6 +11,15 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 internal object AppUpdateServices {
+
+    val fDroidService: FdroidService by lazy {
+        Retrofit.Builder()
+            .baseUrl(FdroidConstants.BASE_URL)
+            .addCallAdapterFactory(CoroutineCallAdapterFactory())
+            .addConverterFactory(MoshiConverterFactory.create())
+            .build()
+            .create(FdroidService::class.java)
+    }
 
     val jsonService: JsonService by lazy {
         Retrofit.Builder()

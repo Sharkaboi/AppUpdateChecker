@@ -6,7 +6,7 @@ sealed class UpdateState {
         val latestVersion: String,
         val latestVersionUrl: String,
         val releaseNotes: String?,
-        val source: AppUpdateCheckerSource
+        val source: IAppUpdateCheckerSource
     ) : UpdateState()
 
     // Latest version already installed
@@ -20,6 +20,12 @@ sealed class UpdateState {
 
     // GitHub repo is private or no releases found of matching type
     object GithubInvalid : UpdateState()
+
+    // FDroid package name not provided or empty or does not contain '.'
+    object FDroidMalformed : UpdateState()
+
+    // Package not found in FDroid
+    object FDroidInvalid : UpdateState()
 
     // No Internet connection available
     object NoNetworkFound : UpdateState()
