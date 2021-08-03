@@ -8,7 +8,7 @@ group = "com.sharkaboi"
 val versionName = "1.0-SNAPSHOT"
 version = versionName
 
-repositories{
+repositories {
     google()
     mavenCentral()
 }
@@ -66,6 +66,7 @@ dependencies {
     api("com.squareup.moshi:moshi-kotlin:${Versions.moshiVersion}")
     kapt("com.squareup.moshi:moshi-kotlin-codegen:${Versions.moshiVersion}")
     api("com.squareup.retrofit2:converter-moshi:${Versions.moshiRetrofitVersion}")
+    api("com.squareup.retrofit2:converter-simplexml:${Versions.simpleXmlVersion}")
     api("com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:${Versions.coroutineCallAdapterVersion}")
     testImplementation("junit:junit:${Versions.jUnitVersion}")
     testImplementation("io.mockk:mockk:${Versions.mockkVersion}")

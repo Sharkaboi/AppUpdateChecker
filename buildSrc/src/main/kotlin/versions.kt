@@ -7,6 +7,7 @@ object Versions {
     const val retrofitVersion = "2.9.0"
     const val moshiVersion = "1.12.0"
     const val moshiRetrofitVersion = "2.9.0"
+    const val simpleXmlVersion = "2.9.0"
     const val coroutineCallAdapterVersion = "0.9.2"
     const val jUnitVersion = "4.13.2"
     const val mockkVersion = "1.12.0"

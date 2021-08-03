@@ -127,6 +127,23 @@ class AppUpdateChecker(
     }
 
     private suspend fun handleXmlCheck(): UpdateState {
-        TODO("Not yet implemented")
+        require(source is AppUpdateCheckerSource.XMLSource) { "Invalid source" }
+        if (source.isValid()) {
+            return try {
+                val release = AppUpdateServices.xmlService.getXMLReleaseMetaDataAsync(
+                    url = source.xmlEndpoint
+                ).await()
+                if (release.latestVersion.isAfterVersion(currentVersionTag)) {
+                    release.toUpdateAvailableState(source)
+                } else {
+                    UpdateState.LatestVersionInstalled
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                UpdateState.XMLInvalid
+            }
+        } else {
+            return UpdateState.XMLMalformed
+        }
     }
 }
