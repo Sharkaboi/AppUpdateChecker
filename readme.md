@@ -20,61 +20,61 @@
 * Add Jitpack to your project
 
 ```groovy
-	allprojects {
-		repositories {
-			...
-			maven { url 'https://jitpack.io' }
-		}
+allprojects {
+	repositories {
+		...
+		maven { url 'https://jitpack.io' }
 	}
+}
 ```
 
 * Add Dependency
 
 ```groovy
-	dependencies {
-		implementation 'com.github.Sharkaboi:AppUpdateChecker:<Latest version>'
-	}
+dependencies {
+	implementation 'com.github.Sharkaboi:AppUpdateChecker:<Latest version>'
+}
 ```
 
 ## Usage
 
 * Initialize update checker instance
 ```kotlin
-	val updateChecker = AppUpdateChecker(
-		context = context,
-		// Any of the sources mentioned below
-		source = AppUpdateCheckerSource.*(), 
-		// Optional : Takes versionName mentioned in gradle by default
-		currentVersionTag = "v1.0.0" 
-	)
+val updateChecker = AppUpdateChecker(
+	context = context,
+	// Any of the sources mentioned below
+	source = AppUpdateCheckerSource.*(), 
+	// Optional : Takes versionName mentioned in gradle by default
+	currentVersionTag = "v1.0.0" 
+)
 ```
 This is so that you can instantiate with your existing DI setup.
 
 * Available sources :
 ```kotlin
-	// Github source
-	AppUpdateCheckerSource.GithubSource(
-		ownerUsername = "Sharkaboi",
-		repoName = "AppUpdateChecker"
-	)
+// Github source
+AppUpdateCheckerSource.GithubSource(
+	ownerUsername = "Sharkaboi",
+	repoName = "AppUpdateChecker"
+)
 
-	// FDroid source
-	AppUpdateCheckerSource.FDroidSource(
-		// Optional : Takes packageName from context by default
-		packageName = "com.sharkaboi.appupdatechecker" 
-    )
+// FDroid source
+AppUpdateCheckerSource.FDroidSource(
+	// Optional : Takes packageName from context by default
+	packageName = "com.sharkaboi.appupdatechecker" 
+)
 
-	// JSON source
-	AppUpdateCheckerSource.JsonSource(
-		// JSON structure mentioned below
-		jsonEndpoint = "https://mywebsite.com/version.json"
-    )
+// JSON source
+AppUpdateCheckerSource.JsonSource(
+	// JSON structure mentioned below
+	jsonEndpoint = "https://mywebsite.com/version.json"
+)
 
-	// XML source
-	AppUpdateCheckerSource.XMLSource(
-		// XML structure mentioned below
-		xmlEndpoint = "https://mywebsite.com/version.xml"
-    )
+// XML source
+AppUpdateCheckerSource.XMLSource(
+	// XML structure mentioned below
+	xmlEndpoint = "https://mywebsite.com/version.xml"
+)
 ```
 JSON structure : 
 ```javascript
@@ -87,58 +87,58 @@ JSON structure :
 XML structure : 
 ```xml
 <version>
-  <latestVersion>v1.2</latestVersion>
-  <latestVersionUrl>https://mywebsite.com/v1.2</latestVersionUrl>
-  <releaseNotes>My epic changelog</releaseNotes>
+	<latestVersion>v1.2</latestVersion>
+	<latestVersionUrl>https://mywebsite.com/v1.2</latestVersionUrl>
+	<releaseNotes>My epic changelog</releaseNotes>
 </version>
 ```
 
 * Check update
 ```kotlin
 viewModelScope.launch {
-        val result = updateChecker.checkUpdate()
+	val result = updateChecker.checkUpdate()
 
-		or
+	//or
 
-        val deferred = updateChecker.checkUpdateAsync()
-        val result = deferred.await()
+	val deferred = updateChecker.checkUpdateAsync()
+	val result = deferred.await()
 
         when(result){
-			// Update found
-            is UpdateState.UpdateAvailable ->
+		// Update found
+		is UpdateState.UpdateAvailable ->
 			
-			// Already has the latest version installed
-            UpdateState.LatestVersionInstalled -> 
+		// Already has the latest version installed
+		UpdateState.LatestVersionInstalled -> 
 			
-			// Mentioned package name not found in FDroid 
-            UpdateState.FDroidInvalid -> 
+		// Mentioned package name not found in FDroid 
+		UpdateState.FDroidInvalid -> 
 			
-			// Mentioned package name was invalid
-            UpdateState.FDroidMalformed -> 
+		// Mentioned package name was invalid
+		UpdateState.FDroidMalformed -> 
 			
-			// Mentioned repo with username not found in Github
-            UpdateState.GithubInvalid -> 
+		// Mentioned repo with username not found in Github
+		UpdateState.GithubInvalid -> 
 			
-			// Mentioned repo or username was invalid
-            UpdateState.GithubMalformed -> 
+		// Mentioned repo or username was invalid
+		UpdateState.GithubMalformed -> 
 			
-			// Mentioned JSON endpoint had invalid structure or wasn't reachable
-            UpdateState.JSONInvalid -> 
+		// Mentioned JSON endpoint had invalid structure or wasn't reachable
+		UpdateState.JSONInvalid -> 
 			
-			// Mentioned JSON endpoint was not a valid URL
-            UpdateState.JSONMalformed -> 
+		// Mentioned JSON endpoint was not a valid URL
+		UpdateState.JSONMalformed -> 
 			
-			// Mentioned XML endpoint had invalid structure or wasn't reachable
-            UpdateState.XMLInvalid -> 
+		// Mentioned XML endpoint had invalid structure or wasn't reachable
+		UpdateState.XMLInvalid -> 
 
-			// Mentioned XML endpoint was not a valid URL
-            UpdateState.XMLMalformed -> 
+		// Mentioned XML endpoint was not a valid URL
+		UpdateState.XMLMalformed -> 
+	
+		// No network found
+		UpdateState.NoNetworkFound -> 
 
-			// No network found
-            UpdateState.NoNetworkFound -> 
-
-			// Generic error to wrap other errors
-            is UpdateState.GenericError -> 
+		// Generic error to wrap other errors
+		is UpdateState.GenericError -> 
         }
     }
 ```
