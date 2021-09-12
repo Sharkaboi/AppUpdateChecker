@@ -1,0 +1,61 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'org.jlleitschuh.gradle.ktlint'
+}
+
+repositories {
+    google()
+    mavenCentral()
+    maven {
+        url "https://plugins.gradle.org/m2/"
+    }
+}
+
+android {
+    compileSdkVersion 31
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 31
+        versionCode 1
+        versionName "1.0.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+}
+
+dependencies {
+    implementation "androidx.core:core-ktx:$ktxCoreVersion"
+    implementation "androidx.appcompat:appcompat:$appCompatVersion"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
+    api "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    api "com.squareup.moshi:moshi-kotlin:$moshiVersion"
+    kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion"
+    api "com.squareup.retrofit2:converter-moshi:$moshiRetrofitVersion"
+    api "com.squareup.retrofit2:converter-simplexml:$simpleXmlVersion"
+    api "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:$coroutineCallAdapterVersion"
+    testImplementation "junit:junit:$jUnitVersion"
+    testImplementation "io.mockk:mockk:$mockkVersion"
+}
+
+ktlint {
+    disabledRules.set(["no-wildcard-imports"])
+}
