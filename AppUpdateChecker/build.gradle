@@ -3,7 +3,11 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'org.jlleitschuh.gradle.ktlint'
+    id 'maven-publish'
 }
+
+group = 'com.github.sharkaboi'
+version = '1.0.1'
 
 repositories {
     google()
@@ -20,7 +24,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 31
         versionCode 1
-        versionName "1.0.0"
+        versionName "1.0.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
@@ -33,12 +37,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "1.8"
     }
 }
 
@@ -58,4 +62,18 @@ dependencies {
 
 ktlint {
     disabledRules.set(["no-wildcard-imports"])
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            // Creates a Maven publication called "release".
+            release(MavenPublication) {
+                from components.release
+                groupId = 'com.github.sharkaboi'
+                artifactId = 'AppUpdateChecker'
+                version = '1.0.1'
+            }
+        }
+    }
 }
