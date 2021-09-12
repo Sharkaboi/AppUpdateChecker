@@ -154,7 +154,7 @@ See the [open issues](https://github.com/Sharkaboi/AppUpdateChecker/issues) for 
 
 ## Contributing
 
-Check [contibuting.md](https://github.com/Sharkaboi/AppUpdateChecker/blob/master/contibuting.md)
+PR's are welcome. Please try to follow the template.
 
 ### Creating A Pull Request
 
