@@ -6,8 +6,8 @@ plugins {
     id 'maven-publish'
 }
 
-group = 'com.github.sharkaboi'
-version = '1.0.1'
+group = 'com.github.Sharkaboi'
+version = 'v1.0.2'
 
 repositories {
     google()
@@ -15,6 +15,7 @@ repositories {
     maven {
         url "https://plugins.gradle.org/m2/"
     }
+    maven { url "https://jitpack.io" }
 }
 
 android {
@@ -24,7 +25,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 31
         versionCode 1
-        versionName "1.0.1"
+        versionName "1.0.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
@@ -70,9 +71,9 @@ afterEvaluate {
             // Creates a Maven publication called "release".
             release(MavenPublication) {
                 from components.release
-                groupId = 'com.github.sharkaboi'
+                groupId = 'com.github.Sharkaboi'
                 artifactId = 'AppUpdateChecker'
-                version = '1.0.1'
+                version = 'v1.0.2'
             }
         }
     }

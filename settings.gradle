@@ -1,2 +1,1 @@
-include ':AppUpdateChecker'
-rootProject.name = "AppUpdateChecker"
+include ':library'
