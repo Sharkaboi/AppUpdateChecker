@@ -29,7 +29,7 @@ allprojects {
 ```
 
 * Add Dependency  
-![](https://img.shields.io/github/v/release/Sharkaboi/AppUpdateChecker?label=Latest%20version)
+[![](https://jitpack.io/v/Sharkaboi/AppUpdateChecker.svg)](https://jitpack.io/#Sharkaboi/AppUpdateChecker)
 ```groovy
 dependencies {
 	implementation 'com.github.Sharkaboi:AppUpdateChecker:<Latest version>'
