@@ -6,7 +6,7 @@ import retrofit2.http.Url
 
 internal interface JsonService {
     @GET
-    fun getJsonReleaseMetaDataAsync(
+    suspend fun getJsonReleaseMetaDataAsync(
         @Url url: String
-    ): Deferred<JsonResponse>
+    ): JsonResponse
 }

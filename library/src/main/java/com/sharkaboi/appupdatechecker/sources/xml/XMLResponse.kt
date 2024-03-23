@@ -1,10 +1,8 @@
 package com.sharkaboi.appupdatechecker.sources.xml
 
-import androidx.annotation.Keep
 import org.simpleframework.xml.Element
 import org.simpleframework.xml.Root
 
-@Keep
 @Root(name = "version")
 data class XMLResponse(
     @field:Element(name = "latestVersion")

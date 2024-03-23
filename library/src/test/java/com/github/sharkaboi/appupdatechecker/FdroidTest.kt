@@ -1,6 +1,7 @@
-package com.sharkaboi.appupdatechecker
+package com.github.sharkaboi.appupdatechecker
 
 import android.content.Context
+import com.sharkaboi.appupdatechecker.AppUpdateChecker
 import com.sharkaboi.appupdatechecker.extensions.isInternetConnected
 import com.sharkaboi.appupdatechecker.models.AppUpdateCheckerSource
 import com.sharkaboi.appupdatechecker.models.UpdateState
@@ -11,7 +12,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
 
-class JsonTest {
+class FdroidTest {
     private lateinit var context: Context
 
     @Before
@@ -19,15 +20,14 @@ class JsonTest {
         context = mockk(relaxed = true)
         mockkStatic("com.sharkaboi.appupdatechecker.extensions.ContextExtensionsKt")
         every { context.isInternetConnected } returns true
+        every { context.packageName } returns "org.fdroid.fdroid"
     }
 
     @Test
     fun `Checker on older installed version returns new version`() = runBlocking {
         val testChecker = AppUpdateChecker(
             context,
-            source = AppUpdateCheckerSource.JsonSource(
-                jsonEndpoint = "https://gist.githubusercontent.com/Sharkaboi/66b45a22afde23a9b2781eeec6f10c56/raw/e0efd6ebdaf88615945fc8c7727a7fc620ad61bf/test.json"
-            ),
+            source = AppUpdateCheckerSource.FDroidSource(),
             currentVersionTag = "v0.0.0"
         )
         val result = testChecker.checkUpdate()
@@ -39,9 +39,7 @@ class JsonTest {
     fun `Checker on newer installed version returns no update`() = runBlocking {
         val testChecker = AppUpdateChecker(
             context,
-            source = AppUpdateCheckerSource.JsonSource(
-                jsonEndpoint = "https://gist.githubusercontent.com/Sharkaboi/66b45a22afde23a9b2781eeec6f10c56/raw/e0efd6ebdaf88615945fc8c7727a7fc620ad61bf/test.json"
-            ),
+            source = AppUpdateCheckerSource.FDroidSource(),
             currentVersionTag = "v${Int.MAX_VALUE}.0.0"
         )
         val result = testChecker.checkUpdate()
@@ -50,58 +48,44 @@ class JsonTest {
     }
 
     @Test
-    fun `Checker on invalid json repo returns invalid error`() = runBlocking {
+    fun `Checker on invalid fdroid package name returns invalid error`() = runBlocking {
         val testChecker = AppUpdateChecker(
             context,
-            source = AppUpdateCheckerSource.JsonSource(
-                jsonEndpoint = "https://google.com"
+            source = AppUpdateCheckerSource.FDroidSource(
+                packageName = "invalid.app.package.name.fdroid",
             ),
             currentVersionTag = "v0.0.0"
         )
         val result = testChecker.checkUpdate()
         println(result)
-        assert(result is UpdateState.JSONInvalid)
+        assert(result is UpdateState.FDroidInvalid)
     }
 
     @Test
-    fun `Checker on invalid json schema returns invalid error`() = runBlocking {
+    fun `Checker on blank package name returns malformed error`() = runBlocking {
         val testChecker = AppUpdateChecker(
             context,
-            source = AppUpdateCheckerSource.JsonSource(
-                jsonEndpoint = "https://gist.githubusercontent.com/Sharkaboi/66b45a22afde23a9b2781eeec6f10c56/raw/a3998cc1728cd42ba02b5b9789f505de42090c84/invalid.json"
+            source = AppUpdateCheckerSource.FDroidSource(
+                packageName = "   "
             ),
             currentVersionTag = "v0.0.0"
         )
         val result = testChecker.checkUpdate()
         println(result)
-        assert(result is UpdateState.JSONInvalid)
+        assert(result is UpdateState.FDroidMalformed)
     }
 
     @Test
-    fun `Checker on invalid url returns malformed error`() = runBlocking {
+    fun `Checker on repo name without dot returns malformed error`() = runBlocking {
         val testChecker = AppUpdateChecker(
             context,
-            source = AppUpdateCheckerSource.JsonSource(
-                jsonEndpoint = "invalid url"
+            source = AppUpdateCheckerSource.FDroidSource(
+                packageName = "comsimplemobiletoolsgallerypro"
             ),
             currentVersionTag = "v0.0.0"
         )
         val result = testChecker.checkUpdate()
         println(result)
-        assert(result is UpdateState.JSONMalformed)
-    }
-
-    @Test
-    fun `Checker on blank endpoint returns malformed error`() = runBlocking {
-        val testChecker = AppUpdateChecker(
-            context,
-            source = AppUpdateCheckerSource.JsonSource(
-                jsonEndpoint = "   "
-            ),
-            currentVersionTag = "v0.0.0"
-        )
-        val result = testChecker.checkUpdate()
-        println(result)
-        assert(result is UpdateState.JSONMalformed)
+        assert(result is UpdateState.FDroidMalformed)
     }
 }

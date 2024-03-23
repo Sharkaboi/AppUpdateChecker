@@ -1,6 +1,7 @@
-package com.sharkaboi.appupdatechecker
+package com.github.sharkaboi.appupdatechecker
 
 import android.content.Context
+import com.sharkaboi.appupdatechecker.AppUpdateChecker
 import com.sharkaboi.appupdatechecker.extensions.isInternetConnected
 import com.sharkaboi.appupdatechecker.models.AppUpdateCheckerSource
 import com.sharkaboi.appupdatechecker.models.UpdateState

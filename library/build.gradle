@@ -6,14 +6,15 @@ plugins {
     id 'maven-publish'
 }
 
-group = 'com.github.Sharkaboi'
+group = 'com.github.sharkaboi.appupdatechecker'
 version = 'v1.0.3'
 
 android {
     compileSdkVersion 34
 
     defaultConfig {
-        minSdkVersion 21
+        namespace "com.github.sharkaboi.appupdatechecker"
+        minSdk 19
         targetSdkVersion 34
         versionCode 1
         versionName "1.0.3"

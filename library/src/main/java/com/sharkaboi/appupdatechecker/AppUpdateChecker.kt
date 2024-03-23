@@ -52,7 +52,7 @@ class AppUpdateChecker(
             return try {
                 val release = AppUpdateServices.fDroidService.getReleasesAsync(
                     packageName = packageName
-                ).await()
+                )
                 if (release.isAfterVersion(currentVersionTag)) {
                     release.toUpdateAvailableState(modifiedSource)
                 } else {
@@ -74,7 +74,7 @@ class AppUpdateChecker(
                 val release = AppUpdateServices.githubService.getLatestReleaseAsync(
                     owner = source.ownerUsername,
                     repo = source.repoName
-                ).await()
+                )
                 if (release.tagName.isAfterVersion(currentVersionTag)) {
                     release.toUpdateAvailableState(source)
                 } else {
@@ -95,7 +95,7 @@ class AppUpdateChecker(
             return try {
                 val release = AppUpdateServices.jsonService.getJsonReleaseMetaDataAsync(
                     url = source.jsonEndpoint
-                ).await()
+                )
                 if (release.latestVersion.isAfterVersion(currentVersionTag)) {
                     release.toUpdateAvailableState(source)
                 } else {
@@ -116,7 +116,7 @@ class AppUpdateChecker(
             return try {
                 val release = AppUpdateServices.xmlService.getXMLReleaseMetaDataAsync(
                     url = source.xmlEndpoint
-                ).await()
+                )
                 if (release.latestVersion.isAfterVersion(currentVersionTag)) {
                     release.toUpdateAvailableState(source)
                 } else {

@@ -7,8 +7,8 @@ import retrofit2.http.Path
 internal interface GithubService {
 
     @GET(GithubConstants.PATH)
-    fun getLatestReleaseAsync(
+    suspend fun getLatestReleaseAsync(
         @Path(GithubConstants.OWNER_PATH_ID) owner: String,
         @Path(GithubConstants.REPO_PATH_ID) repo: String,
-    ): Deferred<GithubResponse>
+    ): GithubResponse
 }

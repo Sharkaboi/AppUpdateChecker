@@ -1,6 +1,7 @@
-package com.sharkaboi.appupdatechecker
+package com.github.sharkaboi.appupdatechecker
 
 import android.content.Context
+import com.sharkaboi.appupdatechecker.AppUpdateChecker
 import com.sharkaboi.appupdatechecker.extensions.isInternetConnected
 import com.sharkaboi.appupdatechecker.models.AppUpdateCheckerSource
 import com.sharkaboi.appupdatechecker.models.UpdateState
@@ -11,7 +12,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
 
-class GithubTest {
+class XMLTest {
     private lateinit var context: Context
 
     @Before
@@ -25,9 +26,8 @@ class GithubTest {
     fun `Checker on older installed version returns new version`() = runBlocking {
         val testChecker = AppUpdateChecker(
             context,
-            source = AppUpdateCheckerSource.GithubSource(
-                ownerUsername = "Sharkaboi",
-                repoName = "MediaHub"
+            source = AppUpdateCheckerSource.XMLSource(
+                xmlEndpoint = "https://gist.githubusercontent.com/Sharkaboi/66b45a22afde23a9b2781eeec6f10c56/raw/132296a0e85d254cd982959bc8f198ca61c213b7/test.xml"
             ),
             currentVersionTag = "v0.0.0"
         )
@@ -40,9 +40,8 @@ class GithubTest {
     fun `Checker on newer installed version returns no update`() = runBlocking {
         val testChecker = AppUpdateChecker(
             context,
-            source = AppUpdateCheckerSource.GithubSource(
-                ownerUsername = "Sharkaboi",
-                repoName = "MediaHub"
+            source = AppUpdateCheckerSource.XMLSource(
+                xmlEndpoint = "https://gist.githubusercontent.com/Sharkaboi/66b45a22afde23a9b2781eeec6f10c56/raw/132296a0e85d254cd982959bc8f198ca61c213b7/test.xml"
             ),
             currentVersionTag = "v${Int.MAX_VALUE}.0.0"
         )
@@ -52,77 +51,58 @@ class GithubTest {
     }
 
     @Test
-    fun `Checker on invalid github repo returns invalid error`() = runBlocking {
+    fun `Checker on invalid xml repo returns invalid error`() = runBlocking {
         val testChecker = AppUpdateChecker(
             context,
-            source = AppUpdateCheckerSource.GithubSource(
-                ownerUsername = "Sharkaboi",
-                repoName = "adadadadadadadadaadada"
+            source = AppUpdateCheckerSource.XMLSource(
+                xmlEndpoint = "https://google.com"
             ),
             currentVersionTag = "v0.0.0"
         )
         val result = testChecker.checkUpdate()
         println(result)
-        assert(result is UpdateState.GithubInvalid)
+        assert(result is UpdateState.XMLInvalid)
     }
 
     @Test
-    fun `Checker on invalid github user returns invalid error`() = runBlocking {
+    fun `Checker on invalid xml schema returns invalid error`() = runBlocking {
         val testChecker = AppUpdateChecker(
             context,
-            source = AppUpdateCheckerSource.GithubSource(
-                ownerUsername = "adadadadadadadadaadada",
-                repoName = "MediaHub"
+            source = AppUpdateCheckerSource.XMLSource(
+                xmlEndpoint = "https://gist.githubusercontent.com/Sharkaboi/66b45a22afde23a9b2781eeec6f10c56/raw/132296a0e85d254cd982959bc8f198ca61c213b7/invalid.xml"
             ),
             currentVersionTag = "v0.0.0"
         )
         val result = testChecker.checkUpdate()
         println(result)
-        assert(result is UpdateState.GithubInvalid)
+        assert(result is UpdateState.XMLInvalid)
     }
 
     @Test
-    fun `Checker on github with no release returns invalid error`() = runBlocking {
+    fun `Checker on invalid url returns malformed error`() = runBlocking {
         val testChecker = AppUpdateChecker(
             context,
-            source = AppUpdateCheckerSource.GithubSource(
-                ownerUsername = "Sharkaboi",
-                repoName = "sharkaboi.github.io"
+            source = AppUpdateCheckerSource.XMLSource(
+                xmlEndpoint = "invalid url"
             ),
             currentVersionTag = "v0.0.0"
         )
         val result = testChecker.checkUpdate()
         println(result)
-        assert(result is UpdateState.GithubInvalid)
+        assert(result is UpdateState.XMLMalformed)
     }
 
     @Test
-    fun `Checker on blank username returns malformed error`() = runBlocking {
+    fun `Checker on blank endpoint returns malformed error`() = runBlocking {
         val testChecker = AppUpdateChecker(
             context,
-            source = AppUpdateCheckerSource.GithubSource(
-                ownerUsername = "   ",
-                repoName = "sharkaboi.github.io"
+            source = AppUpdateCheckerSource.XMLSource(
+                xmlEndpoint = "   "
             ),
             currentVersionTag = "v0.0.0"
         )
         val result = testChecker.checkUpdate()
         println(result)
-        assert(result is UpdateState.GithubMalformed)
-    }
-
-    @Test
-    fun `Checker on empty repo name returns malformed error`() = runBlocking {
-        val testChecker = AppUpdateChecker(
-            context,
-            source = AppUpdateCheckerSource.GithubSource(
-                ownerUsername = "Sharkaboi",
-                repoName = ""
-            ),
-            currentVersionTag = "v0.0.0"
-        )
-        val result = testChecker.checkUpdate()
-        println(result)
-        assert(result is UpdateState.GithubMalformed)
+        assert(result is UpdateState.XMLMalformed)
     }
 }

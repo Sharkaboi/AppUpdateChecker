@@ -6,7 +6,7 @@ import retrofit2.http.Url
 
 interface XMLService {
     @GET
-    fun getXMLReleaseMetaDataAsync(
+    suspend fun getXMLReleaseMetaDataAsync(
         @Url url: String
-    ): Deferred<XMLResponse>
+    ): XMLResponse
 }

@@ -1,10 +1,8 @@
 package com.sharkaboi.appupdatechecker.sources.github
 
-import androidx.annotation.Keep
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
-@Keep
 @JsonClass(generateAdapter = true)
 internal data class GithubResponse(
     @Json(name = "body")
