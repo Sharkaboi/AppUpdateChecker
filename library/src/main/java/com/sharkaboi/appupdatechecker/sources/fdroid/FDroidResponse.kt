@@ -4,7 +4,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class FdroidResponse(
+data class FDroidResponse(
     @Json(name = "packageName")
     val packageName: String,
     @Json(name = "packages")

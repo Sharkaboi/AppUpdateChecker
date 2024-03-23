@@ -20,7 +20,7 @@ sealed class FDroidSource<T> : AppUpdateCheckerSource<T>() {
         .build()
         .create(FdroidService::class.java)
 
-    protected suspend fun queryResponse(): FdroidResponse.Package {
+    protected suspend fun queryResponse(): FDroidResponse.Package {
         if (packageName.isBlank()) {
             throw InvalidPackageNameException("Invalid package name $packageName")
         }
