@@ -53,7 +53,7 @@ This is so that you can instantiate with your existing DI setup.
 * Available sources :
 ```kotlin
 // Github source
-AppUpdateCheckerSource.GithubSource(
+GithubTagSource(
 	ownerUsername = "Sharkaboi",
 	repoName = "AppUpdateChecker"
 )

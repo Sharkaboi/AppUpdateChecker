@@ -1,108 +1,126 @@
 package com.github.sharkaboi.appupdatechecker
 
-import android.content.Context
 import com.sharkaboi.appupdatechecker.AppUpdateChecker
-import com.sharkaboi.appupdatechecker.extensions.isInternetConnected
-import com.sharkaboi.appupdatechecker.models.AppUpdateCheckerSource
-import com.sharkaboi.appupdatechecker.models.UpdateState
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.mockkStatic
+import com.sharkaboi.appupdatechecker.models.InvalidEndPointException
+import com.sharkaboi.appupdatechecker.models.UpdateResult
+import com.sharkaboi.appupdatechecker.sources.xml.XMLVersionCodeSource
+import com.sharkaboi.appupdatechecker.sources.xml.XMLVersionNameSource
 import kotlinx.coroutines.runBlocking
-import org.junit.Before
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class XMLTest {
-    private lateinit var context: Context
-
-    @Before
-    fun init() {
-        context = mockk(relaxed = true)
-        mockkStatic("com.sharkaboi.appupdatechecker.extensions.ContextExtensionsKt")
-        every { context.isInternetConnected } returns true
-    }
+    private val xmlEndpoint =
+        "https://gist.github.com/Sharkaboi/66b45a22afde23a9b2781eeec6f10c56/raw/3b168fc906490cc7f3cf0fc2b843461abf52422e/test.xml"
 
     @Test
     fun `Checker on older installed version returns new version`() = runBlocking {
-        val testChecker = AppUpdateChecker(
-            context,
-            source = AppUpdateCheckerSource.XMLSource(
-                xmlEndpoint = "https://gist.githubusercontent.com/Sharkaboi/66b45a22afde23a9b2781eeec6f10c56/raw/132296a0e85d254cd982959bc8f198ca61c213b7/test.xml"
-            ),
-            currentVersionTag = "v0.0.0"
+        val versionNameChecker = AppUpdateChecker(
+            source = XMLVersionNameSource(
+                xmlEndpoint = xmlEndpoint,
+                currentVersion = "v0.0.0"
+            )
         )
-        val result = testChecker.checkUpdate()
-        println(result)
-        assert(result is UpdateState.UpdateAvailable)
+        val versionNameResult = versionNameChecker.checkUpdate()
+        println(versionNameResult)
+        assert(versionNameResult is UpdateResult.UpdateAvailable<*>)
+
+        val versionCodeChecker = AppUpdateChecker(
+            source = XMLVersionCodeSource(
+                xmlEndpoint = xmlEndpoint,
+                currentVersion = 0
+            )
+        )
+        val versionCodeResult = versionCodeChecker.checkUpdate()
+        println(versionCodeResult)
+        assert(versionCodeResult is UpdateResult.UpdateAvailable<*>)
     }
 
     @Test
     fun `Checker on newer installed version returns no update`() = runBlocking {
-        val testChecker = AppUpdateChecker(
-            context,
-            source = AppUpdateCheckerSource.XMLSource(
-                xmlEndpoint = "https://gist.githubusercontent.com/Sharkaboi/66b45a22afde23a9b2781eeec6f10c56/raw/132296a0e85d254cd982959bc8f198ca61c213b7/test.xml"
-            ),
-            currentVersionTag = "v${Int.MAX_VALUE}.0.0"
+        val versionNameChecker = AppUpdateChecker(
+            source = XMLVersionNameSource(
+                xmlEndpoint = xmlEndpoint,
+                currentVersion = "v${Long.MAX_VALUE}.0.0"
+            )
         )
-        val result = testChecker.checkUpdate()
-        println(result)
-        assert(result is UpdateState.LatestVersionInstalled)
+        val versionNameResult = versionNameChecker.checkUpdate()
+        println(versionNameResult)
+        assert(versionNameResult is UpdateResult.NoUpdate)
+
+        val versionCodeChecker = AppUpdateChecker(
+            source = XMLVersionCodeSource(
+                xmlEndpoint = xmlEndpoint,
+                currentVersion = Long.MAX_VALUE
+            )
+        )
+        val versionCodeResult = versionCodeChecker.checkUpdate()
+        println(versionCodeResult)
+        assert(versionCodeResult is UpdateResult.NoUpdate)
     }
 
     @Test
     fun `Checker on invalid xml repo returns invalid error`() = runBlocking {
-        val testChecker = AppUpdateChecker(
-            context,
-            source = AppUpdateCheckerSource.XMLSource(
-                xmlEndpoint = "https://google.com"
-            ),
-            currentVersionTag = "v0.0.0"
-        )
-        val result = testChecker.checkUpdate()
-        println(result)
-        assert(result is UpdateState.XMLInvalid)
+        val exception = runCatching {
+            val testChecker = AppUpdateChecker(
+                source = XMLVersionNameSource(
+                    xmlEndpoint = "https://google.com",
+                    currentVersion = "v0.0.0"
+                )
+            )
+            val result = testChecker.checkUpdate()
+            println(result)
+        }.exceptionOrNull()
+        println(exception)
+        assertNotNull(exception)
     }
 
     @Test
     fun `Checker on invalid xml schema returns invalid error`() = runBlocking {
-        val testChecker = AppUpdateChecker(
-            context,
-            source = AppUpdateCheckerSource.XMLSource(
-                xmlEndpoint = "https://gist.githubusercontent.com/Sharkaboi/66b45a22afde23a9b2781eeec6f10c56/raw/132296a0e85d254cd982959bc8f198ca61c213b7/invalid.xml"
-            ),
-            currentVersionTag = "v0.0.0"
-        )
-        val result = testChecker.checkUpdate()
-        println(result)
-        assert(result is UpdateState.XMLInvalid)
+        val exception = runCatching {
+            val testChecker = AppUpdateChecker(
+                source = XMLVersionNameSource(
+                    xmlEndpoint = "https://gist.github.com/Sharkaboi/66b45a22afde23a9b2781eeec6f10c56/raw/3b168fc906490cc7f3cf0fc2b843461abf52422e/invalid.xml",
+                    currentVersion = "v0.0.0"
+                )
+            )
+            val result = testChecker.checkUpdate()
+            println(result)
+        }.exceptionOrNull()
+        println(exception)
+        assertNotNull(exception)
     }
 
     @Test
     fun `Checker on invalid url returns malformed error`() = runBlocking {
-        val testChecker = AppUpdateChecker(
-            context,
-            source = AppUpdateCheckerSource.XMLSource(
-                xmlEndpoint = "invalid url"
-            ),
-            currentVersionTag = "v0.0.0"
-        )
-        val result = testChecker.checkUpdate()
-        println(result)
-        assert(result is UpdateState.XMLMalformed)
+        val exception = runCatching {
+            val testChecker = AppUpdateChecker(
+                source = XMLVersionNameSource(
+                    xmlEndpoint = "invalid url",
+                    currentVersion = "v0.0.0"
+                )
+            )
+            val result = testChecker.checkUpdate()
+            println(result)
+        }.exceptionOrNull()
+        println(exception)
+        assertTrue(exception is InvalidEndPointException)
     }
 
     @Test
     fun `Checker on blank endpoint returns malformed error`() = runBlocking {
-        val testChecker = AppUpdateChecker(
-            context,
-            source = AppUpdateCheckerSource.XMLSource(
-                xmlEndpoint = "   "
-            ),
-            currentVersionTag = "v0.0.0"
-        )
-        val result = testChecker.checkUpdate()
-        println(result)
-        assert(result is UpdateState.XMLMalformed)
+        val exception = runCatching {
+            val testChecker = AppUpdateChecker(
+                source = XMLVersionNameSource(
+                    xmlEndpoint = "   ",
+                    currentVersion = "v0.0.0"
+                )
+            )
+            val result = testChecker.checkUpdate()
+            println(result)
+        }.exceptionOrNull()
+        println(exception)
+        assertTrue(exception is InvalidEndPointException)
     }
 }

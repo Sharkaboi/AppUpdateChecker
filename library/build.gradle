@@ -10,11 +10,10 @@ group = 'com.github.sharkaboi.appupdatechecker'
 version = 'v1.0.3'
 
 android {
-    compileSdkVersion 34
-
     defaultConfig {
         namespace "com.github.sharkaboi.appupdatechecker"
         minSdk 19
+        compileSdk 34
         targetSdkVersion 34
         versionCode 1
         versionName "1.0.3"

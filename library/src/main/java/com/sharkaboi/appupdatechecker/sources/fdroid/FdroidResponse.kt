@@ -13,7 +13,7 @@ data class FdroidResponse(
     @JsonClass(generateAdapter = true)
     data class Package(
         @Json(name = "versionCode")
-        val versionCode: Int,
+        val versionCode: Long,
         @Json(name = "versionName")
         val versionName: String
     )

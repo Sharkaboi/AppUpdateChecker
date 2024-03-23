@@ -1,13 +1,12 @@
 package com.sharkaboi.appupdatechecker.sources.fdroid
 
-import kotlinx.coroutines.Deferred
 import retrofit2.http.GET
 import retrofit2.http.Path
 
 internal interface FdroidService {
 
     @GET(FdroidConstants.PATH)
-    suspend fun getReleasesAsync(
+    suspend fun getReleases(
         @Path(FdroidConstants.PACKAGE_PATH_ID) packageName: String
     ): FdroidResponse
 }

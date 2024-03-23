@@ -1,129 +1,129 @@
 package com.github.sharkaboi.appupdatechecker
 
-import android.content.Context
 import com.sharkaboi.appupdatechecker.AppUpdateChecker
-import com.sharkaboi.appupdatechecker.extensions.isInternetConnected
-import com.sharkaboi.appupdatechecker.models.AppUpdateCheckerSource
-import com.sharkaboi.appupdatechecker.models.UpdateState
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.mockkStatic
+import com.sharkaboi.appupdatechecker.models.InvalidRepositoryNameException
+import com.sharkaboi.appupdatechecker.models.InvalidUserNameException
+import com.sharkaboi.appupdatechecker.models.UpdateResult
+import com.sharkaboi.appupdatechecker.sources.github.GithubTagSource
 import kotlinx.coroutines.runBlocking
-import org.junit.Before
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class GithubTest {
-    private lateinit var context: Context
-
-    @Before
-    fun init() {
-        context = mockk(relaxed = true)
-        mockkStatic("com.sharkaboi.appupdatechecker.extensions.ContextExtensionsKt")
-        every { context.isInternetConnected } returns true
-    }
+    private val ownerUsername = "Sharkaboi"
+    private val repoName = "MediaHub"
 
     @Test
     fun `Checker on older installed version returns new version`() = runBlocking {
-        val testChecker = AppUpdateChecker(
-            context,
-            source = AppUpdateCheckerSource.GithubSource(
-                ownerUsername = "Sharkaboi",
-                repoName = "MediaHub"
-            ),
-            currentVersionTag = "v0.0.0"
+        val versionNameChecker = AppUpdateChecker(
+            source = GithubTagSource(
+                ownerUsername = ownerUsername,
+                repoName = repoName,
+                currentVersion = "v0.0.0"
+            )
         )
-        val result = testChecker.checkUpdate()
-        println(result)
-        assert(result is UpdateState.UpdateAvailable)
+        val versionNameResult = versionNameChecker.checkUpdate()
+        println(versionNameResult)
+        assert(versionNameResult is UpdateResult.UpdateAvailable<*>)
     }
 
     @Test
     fun `Checker on newer installed version returns no update`() = runBlocking {
-        val testChecker = AppUpdateChecker(
-            context,
-            source = AppUpdateCheckerSource.GithubSource(
-                ownerUsername = "Sharkaboi",
-                repoName = "MediaHub"
-            ),
-            currentVersionTag = "v${Int.MAX_VALUE}.0.0"
+        val versionNameChecker = AppUpdateChecker(
+            source = GithubTagSource(
+                ownerUsername = ownerUsername,
+                repoName = repoName,
+                currentVersion = "v${Long.MAX_VALUE}.0.0"
+            )
         )
-        val result = testChecker.checkUpdate()
-        println(result)
-        assert(result is UpdateState.LatestVersionInstalled)
+        val versionNameResult = versionNameChecker.checkUpdate()
+        println(versionNameResult)
+        assert(versionNameResult is UpdateResult.NoUpdate)
     }
 
     @Test
     fun `Checker on invalid github repo returns invalid error`() = runBlocking {
-        val testChecker = AppUpdateChecker(
-            context,
-            source = AppUpdateCheckerSource.GithubSource(
-                ownerUsername = "Sharkaboi",
-                repoName = "adadadadadadadadaadada"
-            ),
-            currentVersionTag = "v0.0.0"
-        )
-        val result = testChecker.checkUpdate()
-        println(result)
-        assert(result is UpdateState.GithubInvalid)
+        val exception = runCatching {
+            val testChecker = AppUpdateChecker(
+                source = GithubTagSource(
+                    ownerUsername = "Sharkaboi",
+                    repoName = "adadadadadadadadaadada",
+                    currentVersion = "v0.0.0"
+                )
+            )
+            val result = testChecker.checkUpdate()
+            println(result)
+        }.exceptionOrNull()
+        println(exception)
+        assertNotNull(exception)
     }
 
     @Test
     fun `Checker on invalid github user returns invalid error`() = runBlocking {
-        val testChecker = AppUpdateChecker(
-            context,
-            source = AppUpdateCheckerSource.GithubSource(
-                ownerUsername = "adadadadadadadadaadada",
-                repoName = "MediaHub"
-            ),
-            currentVersionTag = "v0.0.0"
-        )
-        val result = testChecker.checkUpdate()
-        println(result)
-        assert(result is UpdateState.GithubInvalid)
+        val exception = runCatching {
+            val testChecker = AppUpdateChecker(
+                source = GithubTagSource(
+                    ownerUsername = "adadadadadadadadaadada",
+                    repoName = "MediaHub",
+                    currentVersion = "v0.0.0"
+                )
+            )
+            val result = testChecker.checkUpdate()
+            println(result)
+        }.exceptionOrNull()
+        println(exception)
+        assertNotNull(exception)
     }
 
     @Test
     fun `Checker on github with no release returns invalid error`() = runBlocking {
-        val testChecker = AppUpdateChecker(
-            context,
-            source = AppUpdateCheckerSource.GithubSource(
-                ownerUsername = "Sharkaboi",
-                repoName = "sharkaboi.github.io"
-            ),
-            currentVersionTag = "v0.0.0"
-        )
-        val result = testChecker.checkUpdate()
-        println(result)
-        assert(result is UpdateState.GithubInvalid)
+        val exception = runCatching {
+            val testChecker = AppUpdateChecker(
+                source = GithubTagSource(
+                    ownerUsername = "Sharkaboi",
+                    repoName = "sharkaboi.github.io",
+                    currentVersion = "v0.0.0"
+                )
+            )
+            val result = testChecker.checkUpdate()
+            println(result)
+        }.exceptionOrNull()
+        println(exception)
+        assertNotNull(exception)
     }
 
     @Test
     fun `Checker on blank username returns malformed error`() = runBlocking {
-        val testChecker = AppUpdateChecker(
-            context,
-            source = AppUpdateCheckerSource.GithubSource(
-                ownerUsername = "   ",
-                repoName = "sharkaboi.github.io"
-            ),
-            currentVersionTag = "v0.0.0"
-        )
-        val result = testChecker.checkUpdate()
-        println(result)
-        assert(result is UpdateState.GithubMalformed)
+        val exception = runCatching {
+            val testChecker = AppUpdateChecker(
+                source = GithubTagSource(
+                    ownerUsername = "   ",
+                    repoName = "sharkaboi.github.io",
+                    currentVersion = "v0.0.0"
+                )
+            )
+            val result = testChecker.checkUpdate()
+            println(result)
+        }.exceptionOrNull()
+        println(exception)
+        assertTrue(exception is InvalidUserNameException)
     }
 
     @Test
     fun `Checker on empty repo name returns malformed error`() = runBlocking {
-        val testChecker = AppUpdateChecker(
-            context,
-            source = AppUpdateCheckerSource.GithubSource(
-                ownerUsername = "Sharkaboi",
-                repoName = ""
-            ),
-            currentVersionTag = "v0.0.0"
-        )
-        val result = testChecker.checkUpdate()
-        println(result)
-        assert(result is UpdateState.GithubMalformed)
+        val exception = runCatching {
+            val testChecker = AppUpdateChecker(
+                source = GithubTagSource(
+                    ownerUsername = "Sharkaboi",
+                    repoName = "",
+                    currentVersion = "v0.0.0"
+                )
+            )
+            val result = testChecker.checkUpdate()
+            println(result)
+        }.exceptionOrNull()
+        println(exception)
+        assertTrue(exception is InvalidRepositoryNameException)
     }
 }

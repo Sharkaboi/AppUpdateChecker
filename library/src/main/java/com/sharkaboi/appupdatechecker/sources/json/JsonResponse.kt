@@ -5,8 +5,10 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class JsonResponse(
-    @Json(name = "latestVersion")
-    val latestVersion: String,
+    @Json(name = "latestVersionName")
+    val latestVersionName: String?,
+    @Json(name = "latestVersionCode")
+    val latestVersionCode: Long?,
     @Json(name = "latestVersionUrl")
     val latestVersionUrl: String,
     @Json(name = "releaseNotes")
