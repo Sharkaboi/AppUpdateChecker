@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
-    id 'kotlin-kapt'
+    id 'com.google.devtools.ksp'
     id 'org.jlleitschuh.gradle.ktlint'
     id 'maven-publish'
 }
@@ -9,54 +9,42 @@ plugins {
 group = 'com.github.Sharkaboi'
 version = 'v1.0.3'
 
-repositories {
-    google()
-    mavenCentral()
-    maven {
-        url "https://plugins.gradle.org/m2/"
-    }
-    maven { url "https://jitpack.io" }
-}
-
 android {
-    compileSdkVersion 31
+    compileSdkVersion 34
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 34
         versionCode 1
-        versionName "1.0.2"
+        versionName "1.0.3"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
 }
 
 dependencies {
-    implementation "androidx.core:core-ktx:$ktxCoreVersion"
-    implementation "androidx.appcompat:appcompat:$appCompatVersion"
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
-    api "com.squareup.retrofit2:retrofit:$retrofitVersion"
-    api "com.squareup.moshi:moshi-kotlin:$moshiVersion"
-    kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion"
-    api "com.squareup.retrofit2:converter-moshi:$moshiRetrofitVersion"
-    api "com.squareup.retrofit2:converter-simplexml:$simpleXmlVersion"
-    api "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:$coroutineCallAdapterVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    implementation "com.squareup.moshi:moshi-kotlin:$moshiVersion"
+    ksp "com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion"
+    implementation "com.squareup.retrofit2:converter-moshi:$moshiRetrofitVersion"
+    implementation "com.squareup.retrofit2:converter-simplexml:$simpleXmlVersion"
     testImplementation "junit:junit:$jUnitVersion"
     testImplementation "io.mockk:mockk:$mockkVersion"
 }
