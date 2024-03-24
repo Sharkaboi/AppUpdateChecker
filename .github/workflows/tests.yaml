@@ -12,10 +12,10 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: set up JDK 1.8
+      - name: set up JDK
         uses: actions/setup-java@v3
         with:
-          java-version: '8'
+          java-version: '17'
           distribution: 'adopt'
 
       - name: Setup Gradle with cache
@@ -24,11 +24,14 @@ jobs:
       - name: Setup Gradle
         run: chmod +x gradlew
 
-      - name: Gradle build
-        run: bash ./gradlew assembleDebug
+      - name: Build library
+        run: bash ./gradlew library:assembleDebug
+
+      - name: Build sample
+        run: bash ./gradlew sample:assembleDebug
 
       - name: Run kltlint
-        run: ./gradlew ktlintCheck
+        run: ./gradlew library:ktlintCheck
 
       - name: Unit tests
         run: ./gradlew test --stacktrace
