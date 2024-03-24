@@ -1,79 +1,110 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
-    id 'kotlin-kapt'
-    id 'org.jlleitschuh.gradle.ktlint'
+    id 'com.google.devtools.ksp'
     id 'maven-publish'
 }
 
-group = 'com.github.Sharkaboi'
-version = 'v1.0.2'
-
-repositories {
-    google()
-    mavenCentral()
-    maven {
-        url "https://plugins.gradle.org/m2/"
-    }
-    maven { url "https://jitpack.io" }
+project.ext {
+    group_id = "com.github.sharkaboi"
+    package_name = "com.github.sharkaboi.appupdatechecker"
+    artifact_id = "appupdatechecker"
+    version_name = "1.0.3"
+    version_code = 10103
+    github_url = "com.github.sharkaboi.appupdatechecker"
+    license_url = "https://opensource.org/license/mit"
+    license_name = "MIT License"
+    dev_name = "sharkaboi"
+    dev_email = "cybersharkbusiness@gmail.com"
+    lib_description = "An android library that checks for app updates."
 }
 
-android {
-    compileSdkVersion 31
+group = project.ext.group_id
+version = project.ext.version_name
 
+android {
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 31
+        namespace project.ext.package_name
+        minSdk 19
+        compileSdk 34
+        targetSdkVersion 34
         versionCode 1
-        versionName "1.0.2"
+        versionName project.ext.version_name
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
+        freeCompilerArgs = ["-Xstring-concat=inline"]
     }
 }
 
 dependencies {
-    implementation "androidx.core:core-ktx:$ktxCoreVersion"
-    implementation "androidx.appcompat:appcompat:$appCompatVersion"
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
-    api "com.squareup.retrofit2:retrofit:$retrofitVersion"
-    api "com.squareup.moshi:moshi-kotlin:$moshiVersion"
-    kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion"
-    api "com.squareup.retrofit2:converter-moshi:$moshiRetrofitVersion"
-    api "com.squareup.retrofit2:converter-simplexml:$simpleXmlVersion"
-    api "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:$coroutineCallAdapterVersion"
-    testImplementation "junit:junit:$jUnitVersion"
-    testImplementation "io.mockk:mockk:$mockkVersion"
-}
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.0"
+    def moshiVersion = '1.15.1'
+    implementation "com.squareup.moshi:moshi-kotlin:$moshiVersion"
+    ksp "com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion"
+    def retrofitVersion = '2.10.0'
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-moshi:$retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-simplexml:$retrofitVersion"
 
-ktlint {
-    disabledRules.set(["no-wildcard-imports"])
+    // For unit test
+    testImplementation "com.squareup.retrofit2:converter-scalars:$retrofitVersion"
+    testImplementation "junit:junit:4.13.2"
+    testImplementation "io.mockk:mockk:1.13.10"
 }
 
 afterEvaluate {
     publishing {
         publications {
-            // Creates a Maven publication called "release".
-            release(MavenPublication) {
+
+            def pomConfig = {
+                licenses {
+                    license {
+                        name project.ext.license_name
+                        url project.ext.license_url
+                        distribution "repo"
+                    }
+                }
+                developers {
+                    developer {
+                        id project.ext.dev_name
+                        name project.ext.dev_name
+                        email project.ext.dev_email
+                    }
+                }
+
+                scm {
+                    url project.ext.github_url
+                }
+            }
+
+            mavenPublication(MavenPublication) {
                 from components.release
-                groupId = 'com.github.Sharkaboi'
-                artifactId = 'AppUpdateChecker'
-                version = 'v1.0.2'
+                groupId = project.ext.group_id
+                artifactId = project.ext.artifact_id
+                version = project.ext.version_name
+                pom.withXml {
+                    def root = asNode(null)
+                    root.appendNode('description', project.ext.lib_description)
+                    root.appendNode('name', project.ext.artifact_id)
+                    root.appendNode('url', project.ext.github_url)
+                    root.children().last() + pomConfig
+                }
             }
         }
     }
