@@ -4,6 +4,7 @@ import com.sharkaboi.appupdatechecker.AppUpdateChecker
 import com.sharkaboi.appupdatechecker.models.InvalidRepositoryNameException
 import com.sharkaboi.appupdatechecker.models.InvalidUserNameException
 import com.sharkaboi.appupdatechecker.models.PackageNotFoundException
+import com.sharkaboi.appupdatechecker.models.RemoteError
 import com.sharkaboi.appupdatechecker.models.UpdateResult
 import com.sharkaboi.appupdatechecker.sources.github.GithubTagSource
 import kotlinx.coroutines.runBlocking
@@ -125,5 +126,23 @@ class GithubTest {
         }.exceptionOrNull()
         println(exception)
         assertTrue(exception is InvalidRepositoryNameException)
+    }
+
+    @Test
+    fun `Checker with invalid auth token returns error`() = runBlocking {
+        val exception = runCatching {
+            val versionNameChecker = AppUpdateChecker(
+                source = GithubTagSource(
+                    ownerUsername = ownerUsername,
+                    repoName = repoName,
+                    currentVersion = "v0.0.0",
+                    bearerToken = "asdhaskdhakjhd"
+                )
+            )
+            val result = versionNameChecker.checkUpdate()
+            println(result)
+        }.exceptionOrNull()
+        println(exception)
+        assertTrue(exception is RemoteError)
     }
 }

@@ -16,6 +16,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 data class GithubTagSource(
     val ownerUsername: String,
     val repoName: String,
+    val bearerToken: String? = null,
     override val currentVersion: String,
     override var versionComparator: VersionComparator<String> = DefaultStringVersionComparator
 ) : AppUpdateCheckerSource<String>() {
@@ -36,7 +37,15 @@ data class GithubTagSource(
         }
 
         try {
-            val response = service.getLatestRelease(owner = ownerUsername, repo = repoName)
+            val response = if (!bearerToken.isNullOrBlank()) {
+                service.getLatestReleaseWithToken(
+                    owner = ownerUsername,
+                    repo = repoName,
+                    authHeader = "Bearer $bearerToken"
+                )
+            } else {
+                service.getLatestRelease(owner = ownerUsername, repo = repoName)
+            }
 
             if (response.code() == 404) {
                 throw PackageNotFoundException("Project not found in github with username $ownerUsername and repo $repoName")
