@@ -22,8 +22,18 @@ subprojects {
     apply plugin: "org.jlleitschuh.gradle.ktlint"
 
     ktlint {
+        version.set("1.2.1")
         android = true
+        outputToConsole = true
         disabledRules = ["no-wildcard-imports"]
+        filter {
+            exclude { element ->
+                element.file.path.contains("/test/")
+                        || element.file.path.contains("\\test\\")
+                        || element.file.path.contains("/androidTest/")
+                        || element.file.path.contains("\\androidTest\\")
+            }
+        }
     }
 }
 
