@@ -30,8 +30,11 @@ jobs:
       - name: Build sample
         run: bash ./gradlew sample:assembleDebug
 
-      - name: Run kltlint
+      - name: Run kltlint in library
         run: ./gradlew library:ktlintCheck
+
+      - name: Run kltlint in sample
+        run: ./gradlew sample:ktlintCheck
 
       - name: Unit tests
         run: ./gradlew test --stacktrace
