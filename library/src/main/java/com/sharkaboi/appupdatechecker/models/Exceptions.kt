@@ -1,15 +1,20 @@
 package com.sharkaboi.appupdatechecker.models
 
-sealed class AppUpdateExceptions(message: String) : Exception(message)
+sealed interface AppUpdateCheckerException
 
-class InvalidVersionException(message: String) : AppUpdateExceptions(message)
+class InvalidVersionException(message: String) : Exception(message), AppUpdateCheckerException
 
-class InvalidPackageNameException(message: String) : AppUpdateExceptions(message)
+class InvalidPackageNameException(message: String) : Exception(message), AppUpdateCheckerException
 
-class PackageNotFoundException(message: String) : AppUpdateExceptions(message)
+class PackageNotFoundException(message: String) : Exception(message), AppUpdateCheckerException
 
-class InvalidUserNameException(message: String) : AppUpdateExceptions(message)
+class InvalidUserNameException(message: String) : Exception(message), AppUpdateCheckerException
 
-class InvalidRepositoryNameException(message: String) : AppUpdateExceptions(message)
+class InvalidRepositoryNameException(message: String) : Exception(message),
+    AppUpdateCheckerException
 
-class InvalidEndPointException(message: String) : AppUpdateExceptions(message)
+class InvalidEndPointException(message: String) : Exception(message), AppUpdateCheckerException
+
+class RemoteError(throwable: Throwable) : Exception(throwable), AppUpdateCheckerException
+
+class GenericError(throwable: Throwable) : Exception(throwable), AppUpdateCheckerException

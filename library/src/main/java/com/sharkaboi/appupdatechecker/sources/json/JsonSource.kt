@@ -1,7 +1,10 @@
 package com.sharkaboi.appupdatechecker.sources.json
 
+import com.sharkaboi.appupdatechecker.models.AppUpdateCheckerException
+import com.sharkaboi.appupdatechecker.models.GenericError
 import com.sharkaboi.appupdatechecker.models.InvalidEndPointException
 import com.sharkaboi.appupdatechecker.models.InvalidVersionException
+import com.sharkaboi.appupdatechecker.models.RemoteError
 import com.sharkaboi.appupdatechecker.models.VersionDetails
 import com.sharkaboi.appupdatechecker.sources.AppUpdateCheckerSource
 import com.sharkaboi.appupdatechecker.versions.DefaultStringVersionComparator
@@ -26,7 +29,16 @@ sealed class JsonSource<T> : AppUpdateCheckerSource<T>() {
             throw InvalidEndPointException("Invalid endpoint $jsonEndpoint")
         }
 
-        return service.getJsonReleaseMetaData(url = jsonEndpoint)
+        try {
+            val response = service.getJsonReleaseMetaData(url = jsonEndpoint)
+            return response.body()
+                ?: throw RemoteError(Throwable(response.errorBody()?.string()))
+        } catch (e: Exception) {
+            if (e is AppUpdateCheckerException) {
+                throw e
+            }
+            throw GenericError(e)
+        }
     }
 }
 

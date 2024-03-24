@@ -2,11 +2,11 @@ package com.github.sharkaboi.appupdatechecker
 
 import com.sharkaboi.appupdatechecker.AppUpdateChecker
 import com.sharkaboi.appupdatechecker.models.InvalidPackageNameException
+import com.sharkaboi.appupdatechecker.models.PackageNotFoundException
 import com.sharkaboi.appupdatechecker.models.UpdateResult
 import com.sharkaboi.appupdatechecker.sources.fdroid.FDroidVersionCodeSource
 import com.sharkaboi.appupdatechecker.sources.fdroid.FDroidVersionNameSource
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -24,7 +24,7 @@ class FDroidTest {
         )
         val versionNameResult = versionNameChecker.checkUpdate()
         println(versionNameResult)
-        assert(versionNameResult is UpdateResult.UpdateAvailable<*>)
+        assertTrue(versionNameResult is UpdateResult.UpdateAvailable<*>)
 
         val versionCodeChecker = AppUpdateChecker(
             source = FDroidVersionCodeSource(
@@ -34,7 +34,7 @@ class FDroidTest {
         )
         val versionCodeResult = versionCodeChecker.checkUpdate()
         println(versionCodeResult)
-        assert(versionCodeResult is UpdateResult.UpdateAvailable<*>)
+        assertTrue(versionCodeResult is UpdateResult.UpdateAvailable<*>)
     }
 
     @Test
@@ -47,7 +47,7 @@ class FDroidTest {
         )
         val versionNameResult = versionNameChecker.checkUpdate()
         println(versionNameResult)
-        assert(versionNameResult is UpdateResult.NoUpdate)
+        assertTrue(versionNameResult is UpdateResult.NoUpdate)
 
         val versionCodeChecker = AppUpdateChecker(
             source = FDroidVersionCodeSource(
@@ -57,7 +57,7 @@ class FDroidTest {
         )
         val versionCodeResult = versionCodeChecker.checkUpdate()
         println(versionCodeResult)
-        assert(versionCodeResult is UpdateResult.NoUpdate)
+        assertTrue(versionCodeResult is UpdateResult.NoUpdate)
     }
 
     @Test
@@ -73,7 +73,7 @@ class FDroidTest {
             println(result)
         }.exceptionOrNull()
         println(exception)
-        assertNotNull(exception)
+        assertTrue(exception is PackageNotFoundException)
     }
 
     @Test
@@ -105,6 +105,6 @@ class FDroidTest {
             println(result)
         }.exceptionOrNull()
         println(exception)
-        assertNotNull(exception)
+        assertTrue(exception is InvalidPackageNameException)
     }
 }

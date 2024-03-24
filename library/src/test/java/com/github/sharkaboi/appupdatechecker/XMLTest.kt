@@ -1,12 +1,12 @@
 package com.github.sharkaboi.appupdatechecker
 
 import com.sharkaboi.appupdatechecker.AppUpdateChecker
+import com.sharkaboi.appupdatechecker.models.GenericError
 import com.sharkaboi.appupdatechecker.models.InvalidEndPointException
 import com.sharkaboi.appupdatechecker.models.UpdateResult
 import com.sharkaboi.appupdatechecker.sources.xml.XMLVersionCodeSource
 import com.sharkaboi.appupdatechecker.sources.xml.XMLVersionNameSource
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -24,7 +24,7 @@ class XMLTest {
         )
         val versionNameResult = versionNameChecker.checkUpdate()
         println(versionNameResult)
-        assert(versionNameResult is UpdateResult.UpdateAvailable<*>)
+        assertTrue(versionNameResult is UpdateResult.UpdateAvailable<*>)
 
         val versionCodeChecker = AppUpdateChecker(
             source = XMLVersionCodeSource(
@@ -34,7 +34,7 @@ class XMLTest {
         )
         val versionCodeResult = versionCodeChecker.checkUpdate()
         println(versionCodeResult)
-        assert(versionCodeResult is UpdateResult.UpdateAvailable<*>)
+        assertTrue(versionCodeResult is UpdateResult.UpdateAvailable<*>)
     }
 
     @Test
@@ -47,7 +47,7 @@ class XMLTest {
         )
         val versionNameResult = versionNameChecker.checkUpdate()
         println(versionNameResult)
-        assert(versionNameResult is UpdateResult.NoUpdate)
+        assertTrue(versionNameResult is UpdateResult.NoUpdate)
 
         val versionCodeChecker = AppUpdateChecker(
             source = XMLVersionCodeSource(
@@ -57,7 +57,7 @@ class XMLTest {
         )
         val versionCodeResult = versionCodeChecker.checkUpdate()
         println(versionCodeResult)
-        assert(versionCodeResult is UpdateResult.NoUpdate)
+        assertTrue(versionCodeResult is UpdateResult.NoUpdate)
     }
 
     @Test
@@ -73,7 +73,7 @@ class XMLTest {
             println(result)
         }.exceptionOrNull()
         println(exception)
-        assertNotNull(exception)
+        assertTrue(exception is GenericError)
     }
 
     @Test
@@ -89,7 +89,7 @@ class XMLTest {
             println(result)
         }.exceptionOrNull()
         println(exception)
-        assertNotNull(exception)
+        assertTrue(exception is GenericError)
     }
 
     @Test

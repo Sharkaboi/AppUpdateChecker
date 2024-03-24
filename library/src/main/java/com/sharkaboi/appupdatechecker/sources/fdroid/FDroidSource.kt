@@ -1,7 +1,10 @@
 package com.sharkaboi.appupdatechecker.sources.fdroid
 
+import com.sharkaboi.appupdatechecker.models.AppUpdateCheckerException
+import com.sharkaboi.appupdatechecker.models.GenericError
 import com.sharkaboi.appupdatechecker.models.InvalidPackageNameException
 import com.sharkaboi.appupdatechecker.models.PackageNotFoundException
+import com.sharkaboi.appupdatechecker.models.RemoteError
 import com.sharkaboi.appupdatechecker.models.VersionDetails
 import com.sharkaboi.appupdatechecker.sources.AppUpdateCheckerSource
 import com.sharkaboi.appupdatechecker.versions.DefaultStringVersionComparator
@@ -18,7 +21,7 @@ sealed class FDroidSource<T> : AppUpdateCheckerSource<T>() {
         .baseUrl(FdroidConstants.BASE_URL)
         .addConverterFactory(MoshiConverterFactory.create())
         .build()
-        .create(FdroidService::class.java)
+        .create(FDroidService::class.java)
 
     protected suspend fun queryResponse(): FDroidResponse.Package {
         if (packageName.isBlank()) {
@@ -28,11 +31,23 @@ sealed class FDroidSource<T> : AppUpdateCheckerSource<T>() {
         if (!packageName.contains('.')) {
             throw InvalidPackageNameException("Invalid package name $packageName")
         }
+        try {
 
-        val release = service.getReleases(packageName = packageName)
+            val response = service.getReleases(packageName = packageName)
+            if (response.code() == 404) {
+                throw PackageNotFoundException("No details found for package name $packageName")
+            }
 
-        return release.packages.firstOrNull()
-            ?: throw PackageNotFoundException("No details found for package name $packageName")
+            val release = response.body()
+                ?: throw RemoteError(Throwable(response.errorBody()?.string()))
+            return release.packages.firstOrNull()
+                ?: throw PackageNotFoundException("No details found for package name $packageName")
+        } catch (e: Exception) {
+            if (e is AppUpdateCheckerException) {
+                throw e
+            }
+            throw GenericError(e)
+        }
     }
 }
 

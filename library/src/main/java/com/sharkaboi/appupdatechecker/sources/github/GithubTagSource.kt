@@ -1,7 +1,11 @@
 package com.sharkaboi.appupdatechecker.sources.github
 
+import com.sharkaboi.appupdatechecker.models.AppUpdateCheckerException
+import com.sharkaboi.appupdatechecker.models.GenericError
 import com.sharkaboi.appupdatechecker.models.InvalidRepositoryNameException
 import com.sharkaboi.appupdatechecker.models.InvalidUserNameException
+import com.sharkaboi.appupdatechecker.models.PackageNotFoundException
+import com.sharkaboi.appupdatechecker.models.RemoteError
 import com.sharkaboi.appupdatechecker.models.VersionDetails
 import com.sharkaboi.appupdatechecker.sources.AppUpdateCheckerSource
 import com.sharkaboi.appupdatechecker.versions.DefaultStringVersionComparator
@@ -31,12 +35,25 @@ data class GithubTagSource(
             throw InvalidRepositoryNameException("Invalid repository name $repoName")
         }
 
-        val response = service.getLatestRelease(owner = ownerUsername, repo = repoName)
+        try {
+            val response = service.getLatestRelease(owner = ownerUsername, repo = repoName)
 
-        return VersionDetails(
-            releaseNotes = response.body,
-            latestVersionUrl = response.htmlUrl,
-            latestVersion = response.tagName,
-        )
+            if (response.code() == 404) {
+                throw PackageNotFoundException("Project not found in github with username $ownerUsername and repo $repoName")
+            }
+            val githubResponse =
+                response.body() ?: throw RemoteError(Throwable(response.errorBody()?.string()))
+
+            return VersionDetails(
+                releaseNotes = githubResponse.body,
+                latestVersionUrl = githubResponse.htmlUrl,
+                latestVersion = githubResponse.tagName,
+            )
+        } catch (e: Exception) {
+            if (e is AppUpdateCheckerException) {
+                throw e
+            }
+            throw GenericError(e)
+        }
     }
 }

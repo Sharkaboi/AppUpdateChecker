@@ -1,7 +1,10 @@
 package com.sharkaboi.appupdatechecker.sources.xml
 
+import com.sharkaboi.appupdatechecker.models.AppUpdateCheckerException
+import com.sharkaboi.appupdatechecker.models.GenericError
 import com.sharkaboi.appupdatechecker.models.InvalidEndPointException
 import com.sharkaboi.appupdatechecker.models.InvalidVersionException
+import com.sharkaboi.appupdatechecker.models.RemoteError
 import com.sharkaboi.appupdatechecker.models.VersionDetails
 import com.sharkaboi.appupdatechecker.sources.AppUpdateCheckerSource
 import com.sharkaboi.appupdatechecker.versions.DefaultStringVersionComparator
@@ -25,7 +28,16 @@ sealed class XMLSource<T> : AppUpdateCheckerSource<T>() {
             throw InvalidEndPointException("Invalid endpoint $xmlEndpoint")
         }
 
-        return service.getXMLReleaseMetaData(url = xmlEndpoint)
+        try {
+            val response = service.getXMLReleaseMetaData(url = xmlEndpoint)
+            return response.body()
+                ?: throw RemoteError(Throwable(response.errorBody()?.string()))
+        } catch (e: Exception) {
+            if (e is AppUpdateCheckerException) {
+                throw e
+            }
+            throw GenericError(e)
+        }
     }
 }
 

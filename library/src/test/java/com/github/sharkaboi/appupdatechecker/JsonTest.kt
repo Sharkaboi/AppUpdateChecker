@@ -1,12 +1,12 @@
 package com.github.sharkaboi.appupdatechecker
 
 import com.sharkaboi.appupdatechecker.AppUpdateChecker
+import com.sharkaboi.appupdatechecker.models.GenericError
 import com.sharkaboi.appupdatechecker.models.InvalidEndPointException
 import com.sharkaboi.appupdatechecker.models.UpdateResult
 import com.sharkaboi.appupdatechecker.sources.json.JsonVersionCodeSource
 import com.sharkaboi.appupdatechecker.sources.json.JsonVersionNameSource
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -24,7 +24,7 @@ class JsonTest {
         )
         val versionNameResult = versionNameChecker.checkUpdate()
         println(versionNameResult)
-        assert(versionNameResult is UpdateResult.UpdateAvailable<*>)
+        assertTrue(versionNameResult is UpdateResult.UpdateAvailable<*>)
 
         val versionCodeChecker = AppUpdateChecker(
             source = JsonVersionCodeSource(
@@ -34,7 +34,7 @@ class JsonTest {
         )
         val versionCodeResult = versionCodeChecker.checkUpdate()
         println(versionCodeResult)
-        assert(versionCodeResult is UpdateResult.UpdateAvailable<*>)
+        assertTrue(versionCodeResult is UpdateResult.UpdateAvailable<*>)
     }
 
     @Test
@@ -47,7 +47,7 @@ class JsonTest {
         )
         val versionNameResult = versionNameChecker.checkUpdate()
         println(versionNameResult)
-        assert(versionNameResult is UpdateResult.NoUpdate)
+        assertTrue(versionNameResult is UpdateResult.NoUpdate)
 
         val versionCodeChecker = AppUpdateChecker(
             source = JsonVersionCodeSource(
@@ -57,7 +57,7 @@ class JsonTest {
         )
         val versionCodeResult = versionCodeChecker.checkUpdate()
         println(versionCodeResult)
-        assert(versionCodeResult is UpdateResult.NoUpdate)
+        assertTrue(versionCodeResult is UpdateResult.NoUpdate)
     }
 
 
@@ -74,7 +74,7 @@ class JsonTest {
             println(result)
         }.exceptionOrNull()
         println(exception)
-        assertNotNull(exception)
+        assertTrue(exception is GenericError)
     }
 
     @Test
@@ -90,7 +90,7 @@ class JsonTest {
             println(result)
         }.exceptionOrNull()
         println(exception)
-        assertNotNull(exception)
+        assertTrue(exception is GenericError)
     }
 
     @Test

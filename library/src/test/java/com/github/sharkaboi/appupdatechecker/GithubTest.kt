@@ -3,10 +3,10 @@ package com.github.sharkaboi.appupdatechecker
 import com.sharkaboi.appupdatechecker.AppUpdateChecker
 import com.sharkaboi.appupdatechecker.models.InvalidRepositoryNameException
 import com.sharkaboi.appupdatechecker.models.InvalidUserNameException
+import com.sharkaboi.appupdatechecker.models.PackageNotFoundException
 import com.sharkaboi.appupdatechecker.models.UpdateResult
 import com.sharkaboi.appupdatechecker.sources.github.GithubTagSource
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -25,7 +25,7 @@ class GithubTest {
         )
         val versionNameResult = versionNameChecker.checkUpdate()
         println(versionNameResult)
-        assert(versionNameResult is UpdateResult.UpdateAvailable<*>)
+        assertTrue(versionNameResult is UpdateResult.UpdateAvailable<*>)
     }
 
     @Test
@@ -39,7 +39,7 @@ class GithubTest {
         )
         val versionNameResult = versionNameChecker.checkUpdate()
         println(versionNameResult)
-        assert(versionNameResult is UpdateResult.NoUpdate)
+        assertTrue(versionNameResult is UpdateResult.NoUpdate)
     }
 
     @Test
@@ -56,7 +56,7 @@ class GithubTest {
             println(result)
         }.exceptionOrNull()
         println(exception)
-        assertNotNull(exception)
+        assertTrue(exception is PackageNotFoundException)
     }
 
     @Test
@@ -73,7 +73,7 @@ class GithubTest {
             println(result)
         }.exceptionOrNull()
         println(exception)
-        assertNotNull(exception)
+        assertTrue(exception is PackageNotFoundException)
     }
 
     @Test
@@ -90,7 +90,7 @@ class GithubTest {
             println(result)
         }.exceptionOrNull()
         println(exception)
-        assertNotNull(exception)
+        assertTrue(exception is PackageNotFoundException)
     }
 
     @Test

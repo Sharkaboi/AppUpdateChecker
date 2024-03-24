@@ -9,6 +9,7 @@ import com.sharkaboi.appupdatechecker.sources.json.JsonVersionNameSource
 import com.sharkaboi.appupdatechecker.versions.DefaultStringVersionComparator
 import com.sharkaboi.appupdatechecker.versions.VersionComparator
 import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class VersionComparatorTest {
@@ -28,7 +29,7 @@ class VersionComparatorTest {
                 println(result)
             }.exceptionOrNull()
             println(exception)
-            assert(exception is InvalidVersionException)
+            assertTrue(exception is InvalidVersionException)
         }
 
     @Test
@@ -46,7 +47,7 @@ class VersionComparatorTest {
                 println(result)
             }.exceptionOrNull()
             println(exception)
-            assert(exception is InvalidVersionException)
+            assertTrue(exception is InvalidVersionException)
         }
 
     @Test
@@ -64,7 +65,7 @@ class VersionComparatorTest {
                 println(result)
             }.exceptionOrNull()
             println(exception)
-            assert(exception is InvalidVersionException)
+            assertTrue(exception is InvalidVersionException)
         }
 
     @Test
@@ -82,7 +83,7 @@ class VersionComparatorTest {
                 println(result)
             }.exceptionOrNull()
             println(exception)
-            assert(exception is InvalidVersionException)
+            assertTrue(exception is InvalidVersionException)
         }
 
     @Test
@@ -99,7 +100,7 @@ class VersionComparatorTest {
                 println(result)
             }.exceptionOrNull()
             println(exception)
-            assert(exception is InvalidVersionException)
+            assertTrue(exception is InvalidVersionException)
         }
 
     @Test
@@ -125,6 +126,6 @@ class VersionComparatorTest {
             val testChecker = AppUpdateChecker(source = source)
             val result = testChecker.checkUpdate()
             println(result)
-            assert(result is UpdateResult.UpdateAvailable<*>)
+            assertTrue(result is UpdateResult.UpdateAvailable<*>)
         }
 }
