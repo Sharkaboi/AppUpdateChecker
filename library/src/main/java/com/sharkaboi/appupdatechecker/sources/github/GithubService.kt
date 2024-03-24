@@ -6,7 +6,6 @@ import retrofit2.http.Header
 import retrofit2.http.Path
 
 internal interface GithubService {
-
     @GET(GithubConstants.PATH)
     suspend fun getLatestRelease(
         @Path(GithubConstants.OWNER_PATH_ID) owner: String,

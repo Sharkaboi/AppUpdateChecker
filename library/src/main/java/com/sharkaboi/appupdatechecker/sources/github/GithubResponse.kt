@@ -10,5 +10,5 @@ internal data class GithubResponse(
     @Json(name = "html_url")
     val htmlUrl: String,
     @Json(name = "tag_name")
-    val tagName: String
+    val tagName: String,
 )

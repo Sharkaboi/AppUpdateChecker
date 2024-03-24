@@ -5,9 +5,8 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 internal interface FDroidService {
-
     @GET(FdroidConstants.PATH)
     suspend fun getReleases(
-        @Path(FdroidConstants.PACKAGE_PATH_ID) packageName: String
+        @Path(FdroidConstants.PACKAGE_PATH_ID) packageName: String,
     ): Response<FDroidResponse>
 }

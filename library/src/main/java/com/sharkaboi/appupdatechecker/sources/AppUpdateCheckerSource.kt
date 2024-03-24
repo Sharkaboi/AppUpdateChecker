@@ -15,6 +15,7 @@ import com.sharkaboi.appupdatechecker.versions.VersionComparator
 abstract class AppUpdateCheckerSource<T> {
     protected abstract val currentVersion: T
     protected abstract var versionComparator: VersionComparator<T>
+
     protected abstract suspend fun queryVersionDetails(): VersionDetails<T>
 
     @Throws(
@@ -25,7 +26,7 @@ abstract class AppUpdateCheckerSource<T> {
         InvalidRepositoryNameException::class,
         InvalidEndPointException::class,
         RemoteError::class,
-        GenericError::class
+        GenericError::class,
     )
     suspend fun getUpdateState(): UpdateResult {
         val versionDetails = queryVersionDetails()

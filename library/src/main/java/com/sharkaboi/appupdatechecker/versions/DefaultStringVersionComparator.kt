@@ -4,7 +4,10 @@ import com.sharkaboi.appupdatechecker.models.InvalidVersionException
 import kotlin.math.max
 
 object DefaultStringVersionComparator : VersionComparator<String> {
-    override fun isNewerVersion(currentVersion: String, newVersion: String): Boolean {
+    override fun isNewerVersion(
+        currentVersion: String,
+        newVersion: String,
+    ): Boolean {
         val currentVersionSubParts = parseVersion(currentVersion)
         val newVersionSubParts = parseVersion(newVersion)
         val length = max(currentVersionSubParts.size, newVersionSubParts.size)
@@ -25,7 +28,10 @@ object DefaultStringVersionComparator : VersionComparator<String> {
         return false
     }
 
-    private fun padUntil(list: List<Long>, length: Int): List<Long> {
+    private fun padUntil(
+        list: List<Long>,
+        length: Int,
+    ): List<Long> {
         return list + List(length - list.size) { 0L }
     }
 

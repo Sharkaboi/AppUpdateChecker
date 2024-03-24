@@ -18,14 +18,14 @@ data class GithubTagSource(
     val repoName: String,
     val bearerToken: String? = null,
     override val currentVersion: String,
-    override var versionComparator: VersionComparator<String> = DefaultStringVersionComparator
+    override var versionComparator: VersionComparator<String> = DefaultStringVersionComparator,
 ) : AppUpdateCheckerSource<String>() {
-
-    private val service = Retrofit.Builder()
-        .baseUrl(GithubConstants.BASE_URL)
-        .addConverterFactory(MoshiConverterFactory.create())
-        .build()
-        .create(GithubService::class.java)
+    private val service =
+        Retrofit.Builder()
+            .baseUrl(GithubConstants.BASE_URL)
+            .addConverterFactory(MoshiConverterFactory.create())
+            .build()
+            .create(GithubService::class.java)
 
     override suspend fun queryVersionDetails(): VersionDetails<String> {
         if (ownerUsername.isBlank()) {
@@ -37,15 +37,16 @@ data class GithubTagSource(
         }
 
         try {
-            val response = if (!bearerToken.isNullOrBlank()) {
-                service.getLatestReleaseWithToken(
-                    owner = ownerUsername,
-                    repo = repoName,
-                    authHeader = "Bearer $bearerToken"
-                )
-            } else {
-                service.getLatestRelease(owner = ownerUsername, repo = repoName)
-            }
+            val response =
+                if (!bearerToken.isNullOrBlank()) {
+                    service.getLatestReleaseWithToken(
+                        owner = ownerUsername,
+                        repo = repoName,
+                        authHeader = "Bearer $bearerToken",
+                    )
+                } else {
+                    service.getLatestRelease(owner = ownerUsername, repo = repoName)
+                }
 
             if (response.code() == 404) {
                 throw PackageNotFoundException("Project not found in github with username $ownerUsername and repo $repoName")

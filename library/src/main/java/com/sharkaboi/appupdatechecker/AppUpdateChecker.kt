@@ -11,13 +11,15 @@ import kotlinx.coroutines.withContext
 class AppUpdateChecker<T>(private val source: AppUpdateCheckerSource<T>) {
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 
-    suspend fun checkUpdate(): UpdateResult = withContext(dispatcher) {
-        return@withContext checkUpdateAsync().await()
-    }
-
-    suspend fun checkUpdateAsync(): Deferred<UpdateResult> = withContext(dispatcher) {
-        return@withContext async {
-            return@async source.getUpdateState()
+    suspend fun checkUpdate(): UpdateResult =
+        withContext(dispatcher) {
+            return@withContext checkUpdateAsync().await()
         }
-    }
+
+    suspend fun checkUpdateAsync(): Deferred<UpdateResult> =
+        withContext(dispatcher) {
+            return@withContext async {
+                return@async source.getUpdateState()
+            }
+        }
 }

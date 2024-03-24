@@ -13,15 +13,15 @@ import com.sharkaboi.appupdatechecker.versions.VersionComparator
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
-
 sealed class FDroidSource<T> : AppUpdateCheckerSource<T>() {
     abstract val packageName: String
 
-    private val service = Retrofit.Builder()
-        .baseUrl(FdroidConstants.BASE_URL)
-        .addConverterFactory(MoshiConverterFactory.create())
-        .build()
-        .create(FDroidService::class.java)
+    private val service =
+        Retrofit.Builder()
+            .baseUrl(FdroidConstants.BASE_URL)
+            .addConverterFactory(MoshiConverterFactory.create())
+            .build()
+            .create(FDroidService::class.java)
 
     protected suspend fun queryResponse(): FDroidResponse.Package {
         if (packageName.isBlank()) {
@@ -32,14 +32,14 @@ sealed class FDroidSource<T> : AppUpdateCheckerSource<T>() {
             throw InvalidPackageNameException("Invalid package name $packageName")
         }
         try {
-
             val response = service.getReleases(packageName = packageName)
             if (response.code() == 404) {
                 throw PackageNotFoundException("No details found for package name $packageName")
             }
 
-            val release = response.body()
-                ?: throw RemoteError(Throwable(response.errorBody()?.string()))
+            val release =
+                response.body()
+                    ?: throw RemoteError(Throwable(response.errorBody()?.string()))
             return release.packages.firstOrNull()
                 ?: throw PackageNotFoundException("No details found for package name $packageName")
         } catch (e: Exception) {
@@ -54,9 +54,8 @@ sealed class FDroidSource<T> : AppUpdateCheckerSource<T>() {
 data class FDroidVersionNameSource(
     override val packageName: String,
     override val currentVersion: String,
-    override var versionComparator: VersionComparator<String> = DefaultStringVersionComparator
+    override var versionComparator: VersionComparator<String> = DefaultStringVersionComparator,
 ) : FDroidSource<String>() {
-
     override suspend fun queryVersionDetails(): VersionDetails<String> {
         val response = queryResponse()
         return VersionDetails(
@@ -70,9 +69,8 @@ data class FDroidVersionNameSource(
 data class FDroidVersionCodeSource(
     override val packageName: String,
     override val currentVersion: Long,
-    override var versionComparator: VersionComparator<Long> = DefaultVersionCodeComparator
+    override var versionComparator: VersionComparator<Long> = DefaultVersionCodeComparator,
 ) : FDroidSource<Long>() {
-
     override suspend fun queryVersionDetails(): VersionDetails<Long> {
         val response = queryResponse()
         return VersionDetails(

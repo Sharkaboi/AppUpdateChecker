@@ -7,6 +7,6 @@ import retrofit2.http.Url
 internal interface JsonService {
     @GET
     suspend fun getJsonReleaseMetaData(
-        @Url url: String
+        @Url url: String,
     ): Response<JsonResponse>
 }

@@ -10,7 +10,8 @@ class PackageNotFoundException(message: String) : Exception(message), AppUpdateC
 
 class InvalidUserNameException(message: String) : Exception(message), AppUpdateCheckerException
 
-class InvalidRepositoryNameException(message: String) : Exception(message),
+class InvalidRepositoryNameException(message: String) :
+    Exception(message),
     AppUpdateCheckerException
 
 class InvalidEndPointException(message: String) : Exception(message), AppUpdateCheckerException

@@ -14,15 +14,15 @@ import okhttp3.HttpUrl
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
-
 sealed class JsonSource<T> : AppUpdateCheckerSource<T>() {
     abstract val jsonEndpoint: String
 
-    private val service = Retrofit.Builder()
-        .baseUrl("https://google.com")
-        .addConverterFactory(MoshiConverterFactory.create())
-        .build()
-        .create(JsonService::class.java)
+    private val service =
+        Retrofit.Builder()
+            .baseUrl("https://google.com")
+            .addConverterFactory(MoshiConverterFactory.create())
+            .build()
+            .create(JsonService::class.java)
 
     protected suspend fun queryResponse(): JsonResponse {
         if (HttpUrl.parse(jsonEndpoint) == null) {
@@ -45,12 +45,13 @@ sealed class JsonSource<T> : AppUpdateCheckerSource<T>() {
 data class JsonVersionNameSource(
     override val jsonEndpoint: String,
     override val currentVersion: String,
-    override var versionComparator: VersionComparator<String> = DefaultStringVersionComparator
+    override var versionComparator: VersionComparator<String> = DefaultStringVersionComparator,
 ) : JsonSource<String>() {
     override suspend fun queryVersionDetails(): VersionDetails<String> {
         val response = queryResponse()
-        val latestVersion = response.latestVersionName
-            ?: throw InvalidVersionException("Version name was not found or null in response")
+        val latestVersion =
+            response.latestVersionName
+                ?: throw InvalidVersionException("Version name was not found or null in response")
         return VersionDetails(
             releaseNotes = response.releaseNotes,
             latestVersionUrl = response.latestVersionUrl,
@@ -62,12 +63,13 @@ data class JsonVersionNameSource(
 data class JsonVersionCodeSource(
     override val jsonEndpoint: String,
     override val currentVersion: Long,
-    override var versionComparator: VersionComparator<Long> = DefaultVersionCodeComparator
+    override var versionComparator: VersionComparator<Long> = DefaultVersionCodeComparator,
 ) : JsonSource<Long>() {
     override suspend fun queryVersionDetails(): VersionDetails<Long> {
         val response = queryResponse()
-        val latestVersion = response.latestVersionCode
-            ?: throw InvalidVersionException("Version code was not found or null in response")
+        val latestVersion =
+            response.latestVersionCode
+                ?: throw InvalidVersionException("Version code was not found or null in response")
         return VersionDetails(
             releaseNotes = response.releaseNotes,
             latestVersionUrl = response.latestVersionUrl,

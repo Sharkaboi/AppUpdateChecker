@@ -12,5 +12,5 @@ data class JsonResponse(
     @Json(name = "latestVersionUrl")
     val latestVersionUrl: String,
     @Json(name = "releaseNotes")
-    val releaseNotes: String?
+    val releaseNotes: String?,
 )

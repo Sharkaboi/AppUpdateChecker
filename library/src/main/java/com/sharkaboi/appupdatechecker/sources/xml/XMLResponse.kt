@@ -16,5 +16,5 @@ data class XMLResponse(
     val latestVersionUrl: String,
     @field:Element(name = "releaseNotes")
     @param:Element(name = "releaseNotes")
-    val releaseNotes: String?
+    val releaseNotes: String?,
 )

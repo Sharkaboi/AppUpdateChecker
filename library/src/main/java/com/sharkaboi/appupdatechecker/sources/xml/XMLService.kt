@@ -7,6 +7,6 @@ import retrofit2.http.Url
 interface XMLService {
     @GET
     suspend fun getXMLReleaseMetaData(
-        @Url url: String
+        @Url url: String,
     ): Response<XMLResponse>
 }
