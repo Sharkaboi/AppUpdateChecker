@@ -6,17 +6,31 @@ plugins {
     id 'maven-publish'
 }
 
-group = 'com.github.sharkaboi.appupdatechecker'
-version = 'v1.0.3'
+project.ext {
+    group_id = "com.github.sharkaboi"
+    package_name = "com.github.sharkaboi.appupdatechecker"
+    artifact_id = "appupdatechecker"
+    version_name = "1.0.3"
+    version_code = 10103
+    github_url = "com.github.sharkaboi.appupdatechecker"
+    license_url = "https://opensource.org/license/mit"
+    license_name = "MIT License"
+    dev_name = "sharkaboi"
+    dev_email = "cybersharkbusiness@gmail.com"
+    lib_description = "An android library that checks for app updates."
+}
+
+group = project.ext.group_id
+version = project.ext.version_name
 
 android {
     defaultConfig {
-        namespace "com.github.sharkaboi.appupdatechecker"
+        namespace project.ext.package_name
         minSdk 19
         compileSdk 34
         targetSdkVersion 34
         versionCode 1
-        versionName "1.0.3"
+        versionName project.ext.version_name
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
@@ -29,24 +43,27 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "1.8"
     }
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
-    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.0"
+    def moshiVersion = '1.15.1'
     implementation "com.squareup.moshi:moshi-kotlin:$moshiVersion"
     ksp "com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion"
-    implementation "com.squareup.retrofit2:converter-moshi:$moshiRetrofitVersion"
-    implementation "com.squareup.retrofit2:converter-simplexml:$simpleXmlVersion"
-    testImplementation "junit:junit:$jUnitVersion"
-    testImplementation "io.mockk:mockk:$mockkVersion"
+    def retrofitVersion = '2.10.0'
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-moshi:$retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-simplexml:$retrofitVersion"
+
+    testImplementation "junit:junit:4.13.2"
+    testImplementation "io.mockk:mockk:1.13.10"
 }
 
 ktlint {
@@ -56,12 +73,40 @@ ktlint {
 afterEvaluate {
     publishing {
         publications {
-            // Creates a Maven publication called "release".
-            release(MavenPublication) {
+
+            def pomConfig = {
+                licenses {
+                    license {
+                        name project.ext.license_name
+                        url project.ext.license_url
+                        distribution "repo"
+                    }
+                }
+                developers {
+                    developer {
+                        id project.ext.dev_name
+                        name project.ext.dev_name
+                        email project.ext.dev_email
+                    }
+                }
+
+                scm {
+                    url project.ext.github_url
+                }
+            }
+
+            mavenPublication(MavenPublication) {
                 from components.release
-                groupId = 'com.github.Sharkaboi'
-                artifactId = 'AppUpdateChecker'
-                version = 'v1.0.2'
+                groupId = project.ext.group_id
+                artifactId = project.ext.artifact_id
+                version = project.ext.version_name
+                pom.withXml {
+                    def root = asNode(null)
+                    root.appendNode('description', project.ext.lib_description)
+                    root.appendNode('name', project.ext.artifact_id)
+                    root.appendNode('url', project.ext.github_url)
+                    root.children().last() + pomConfig
+                }
             }
         }
     }

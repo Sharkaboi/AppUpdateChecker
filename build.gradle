@@ -1,17 +1,4 @@
 buildscript {
-    ext {
-        agpVersion = "8.2.0"
-        kotlinVersion = "1.9.23"
-        coroutinesVersion = '1.8.0'
-        retrofitVersion = '2.10.0'
-        moshiVersion = '1.15.1'
-        moshiRetrofitVersion = '2.10.0'
-        simpleXmlVersion = '2.10.0'
-        ktLintVersion = "10.1.0"
-        jUnitVersion = "4.13.2"
-        mockkVersion = '1.13.10'
-    }
-
     repositories {
         google()
         mavenCentral()
@@ -21,9 +8,9 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.android.tools.build:gradle:$agpVersion"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-        classpath "org.jlleitschuh.gradle:ktlint-gradle:$ktLintVersion"
+        classpath "com.android.tools.build:gradle:8.2.2"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.23"
+        classpath "org.jlleitschuh.gradle:ktlint-gradle:10.1.0"
     }
 }
 
