@@ -176,25 +176,25 @@ XML structure supported by default :
 
 #### Custom source
 
-    ```kotlin
-    class CustomVersionSource(
-    	override val currentVersion: String,
-    	override var versionComparator: VersionComparator<String> = DefaultStringVersionComparator
-    ) : AppUpdateCheckerSource<String>() {
-    	private val customSource = "https://mywebsite.com/latestVersion"
+```kotlin
+class CustomVersionSource(
+    override val currentVersion: String,
+    override var versionComparator: VersionComparator<String> = DefaultStringVersionComparator
+) : AppUpdateCheckerSource<String>() {
+    private val customSource = "https://mywebsite.com/latestVersion"
 
-    	override suspend fun queryVersionDetails(): VersionDetails<String> {
-    		// Do your processing to fetch from source here
-    		...
-    		// Handle exceptions if needed here, wrap with AppUpdateCheckerException if needed
-    		return VersionDetails(
-    			latestVersion = version,
-    			latestVersionUrl = "https://mywebsite.com/download.apk",
-    			releaseNotes = null
-    		)
-    	}
+    override suspend fun queryVersionDetails(): VersionDetails<String> {
+        // Do your processing to fetch from source here
+        ...
+        // Handle exceptions if needed here, wrap with AppUpdateCheckerException if needed
+        return VersionDetails(
+            latestVersion = version,
+            latestVersionUrl = "https://mywebsite.com/download.apk",
+            releaseNotes = null
+        )
     }
-    ```
+}
+```
 
 ### Check for update
 
