@@ -59,8 +59,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            binding.tvUpdateDetails.text =
-                "Error occurred when checking for updates:\n\n$throwable"
+            binding.tvUpdateDetails.text = "Error occurred when checking for updates:\n\n$throwable"
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,11 +71,11 @@ class MainActivity : AppCompatActivity() {
         val updateChecker =
             AppUpdateChecker(
                 source =
-                GithubTagSource(
-                    ownerUsername = "Sharkaboi",
-                    repoName = "AppUpdateChecker",
-                    currentVersion = "v0.0.0",
-                ),
+                    GithubTagSource(
+                        ownerUsername = "Sharkaboi",
+                        repoName = "AppUpdateChecker",
+                        currentVersion = "v0.0.0",
+                    ),
             )
 
         binding.tvUpdateDetails.text = "Checking for updates"
