@@ -39,7 +39,7 @@ sealed class FDroidSource<T> : AppUpdateCheckerSource<T>() {
 data class FDroidVersionNameSource(
     override val packageName: String,
     override val currentVersion: String,
-    override val versionComparator: VersionComparator<String> = DefaultStringVersionComparator
+    override var versionComparator: VersionComparator<String> = DefaultStringVersionComparator
 ) : FDroidSource<String>() {
 
     override suspend fun queryVersionDetails(): VersionDetails<String> {
@@ -55,7 +55,7 @@ data class FDroidVersionNameSource(
 data class FDroidVersionCodeSource(
     override val packageName: String,
     override val currentVersion: Long,
-    override val versionComparator: VersionComparator<Long> = DefaultVersionCodeComparator
+    override var versionComparator: VersionComparator<Long> = DefaultVersionCodeComparator
 ) : FDroidSource<Long>() {
 
     override suspend fun queryVersionDetails(): VersionDetails<Long> {

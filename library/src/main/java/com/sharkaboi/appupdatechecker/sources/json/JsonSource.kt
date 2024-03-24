@@ -33,7 +33,7 @@ sealed class JsonSource<T> : AppUpdateCheckerSource<T>() {
 data class JsonVersionNameSource(
     override val jsonEndpoint: String,
     override val currentVersion: String,
-    override val versionComparator: VersionComparator<String> = DefaultStringVersionComparator
+    override var versionComparator: VersionComparator<String> = DefaultStringVersionComparator
 ) : JsonSource<String>() {
     override suspend fun queryVersionDetails(): VersionDetails<String> {
         val response = queryResponse()
@@ -50,7 +50,7 @@ data class JsonVersionNameSource(
 data class JsonVersionCodeSource(
     override val jsonEndpoint: String,
     override val currentVersion: Long,
-    override val versionComparator: VersionComparator<Long> = DefaultVersionCodeComparator
+    override var versionComparator: VersionComparator<Long> = DefaultVersionCodeComparator
 ) : JsonSource<Long>() {
     override suspend fun queryVersionDetails(): VersionDetails<Long> {
         val response = queryResponse()

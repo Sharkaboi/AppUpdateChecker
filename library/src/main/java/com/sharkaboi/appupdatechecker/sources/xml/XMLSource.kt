@@ -32,7 +32,7 @@ sealed class XMLSource<T> : AppUpdateCheckerSource<T>() {
 data class XMLVersionNameSource(
     override val xmlEndpoint: String,
     override val currentVersion: String,
-    override val versionComparator: VersionComparator<String> = DefaultStringVersionComparator
+    override var versionComparator: VersionComparator<String> = DefaultStringVersionComparator
 ) : XMLSource<String>() {
     override suspend fun queryVersionDetails(): VersionDetails<String> {
         val response = queryResponse()
@@ -49,7 +49,7 @@ data class XMLVersionNameSource(
 data class XMLVersionCodeSource(
     override val xmlEndpoint: String,
     override val currentVersion: Long,
-    override val versionComparator: VersionComparator<Long> = DefaultVersionCodeComparator
+    override var versionComparator: VersionComparator<Long> = DefaultVersionCodeComparator
 ) : XMLSource<Long>() {
     override suspend fun queryVersionDetails(): VersionDetails<Long> {
         val response = queryResponse()

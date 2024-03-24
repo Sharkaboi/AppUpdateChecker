@@ -13,7 +13,7 @@ data class GithubTagSource(
     val ownerUsername: String,
     val repoName: String,
     override val currentVersion: String,
-    override val versionComparator: VersionComparator<String> = DefaultStringVersionComparator
+    override var versionComparator: VersionComparator<String> = DefaultStringVersionComparator
 ) : AppUpdateCheckerSource<String>() {
 
     private val service = Retrofit.Builder()

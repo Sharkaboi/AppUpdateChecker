@@ -2,8 +2,12 @@ package com.github.sharkaboi.appupdatechecker
 
 import com.sharkaboi.appupdatechecker.AppUpdateChecker
 import com.sharkaboi.appupdatechecker.models.InvalidVersionException
+import com.sharkaboi.appupdatechecker.models.UpdateResult
 import com.sharkaboi.appupdatechecker.sources.fdroid.FDroidVersionCodeSource
 import com.sharkaboi.appupdatechecker.sources.github.GithubTagSource
+import com.sharkaboi.appupdatechecker.sources.json.JsonVersionNameSource
+import com.sharkaboi.appupdatechecker.versions.DefaultStringVersionComparator
+import com.sharkaboi.appupdatechecker.versions.VersionComparator
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
@@ -96,5 +100,31 @@ class VersionComparatorTest {
             }.exceptionOrNull()
             println(exception)
             assert(exception is InvalidVersionException)
+        }
+
+    @Test
+    fun `Setting custom version comparator returns proper update status`() =
+        runBlocking {
+            val source = JsonVersionNameSource(
+                jsonEndpoint = "https://gist.github.com/Sharkaboi/66b45a22afde23a9b2781eeec6f10c56/raw/1b99f59babe56a63aa95a7fb31b5d3682c4b18db/test-custom.json",
+                currentVersion = "v1.0-alpha"
+            )
+
+            val customVersionComparator = object : VersionComparator<String> {
+                override fun isNewerVersion(
+                    currentVersion: String,
+                    newVersion: String
+                ): Boolean {
+                    return DefaultStringVersionComparator.isNewerVersion(
+                        currentVersion.substringBefore('-'),
+                        newVersion.substringBefore('-')
+                    )
+                }
+            }
+            source.setCustomVersionComparator(customVersionComparator)
+            val testChecker = AppUpdateChecker(source = source)
+            val result = testChecker.checkUpdate()
+            println(result)
+            assert(result is UpdateResult.UpdateAvailable<*>)
         }
 }
