@@ -71,39 +71,34 @@ dependencies {
 afterEvaluate {
     publishing {
         publications {
-
-            def pomConfig = {
-                licenses {
-                    license {
-                        name project.ext.license_name
-                        url project.ext.license_url
-                        distribution "repo"
-                    }
-                }
-                developers {
-                    developer {
-                        id project.ext.dev_name
-                        name project.ext.dev_name
-                        email project.ext.dev_email
-                    }
-                }
-
-                scm {
-                    url project.ext.github_url
-                }
-            }
-
             mavenPublication(MavenPublication) {
                 from components.release
                 groupId = project.ext.group_id
                 artifactId = project.ext.artifact_id
                 version = project.ext.version_name
-                pom.withXml {
-                    def root = asNode(null)
-                    root.appendNode('description', project.ext.lib_description)
-                    root.appendNode('name', project.ext.artifact_id)
-                    root.appendNode('url', project.ext.github_url)
-                    root.children().last() + pomConfig
+                pom {
+                    description = project.ext.lib_description
+                    name = project.ext.artifact_id
+                    url = project.ext.github_url
+
+                    licenses {
+                        license {
+                            name = project.ext.license_name
+                            url = project.ext.license_url
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id = project.ext.dev_name
+                            name = project.ext.dev_name
+                            email = project.ext.dev_email
+                        }
+                    }
+
+                    scm {
+                        url = project.ext.github_url
+                    }
                 }
             }
         }
