@@ -31,10 +31,10 @@ dependencies {
 ```kotlin
 val updateChecker = AppUpdateChecker(
     // Any of the sources mentioned below
-    source = < Source >(
-    ... // params
-currentVersion = "v1.0.0"
-)
+    source = <AppUpdateCheckerSource<*>>(
+        ... // params,
+        currentVersion = "v1.0.0"
+    )
 )
 ```
 
