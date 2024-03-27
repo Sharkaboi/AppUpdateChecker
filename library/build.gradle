@@ -9,8 +9,8 @@ project.ext {
     group_id = "com.github.sharkaboi"
     package_name = "com.github.sharkaboi.appupdatechecker"
     artifact_id = "appupdatechecker"
-    version_name = "1.0.3"
-    version_code = 10103
+    version_name = "1.0.5"
+    version_code = 10105
     github_url = "com.github.sharkaboi.appupdatechecker"
     license_url = "https://opensource.org/license/mit"
     license_name = "MIT License"
@@ -36,7 +36,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
